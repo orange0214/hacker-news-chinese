@@ -78,6 +78,13 @@
 - 实现chat_service + router
 - 初始化RAG
 
+#### 12/17/2025
+- 关闭 inline hint, 解决注解编程风格推荐问题
+- debug
+
+#### 12/18/2025
+- 
+
 
 
 TODO:
