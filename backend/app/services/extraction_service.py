@@ -42,6 +42,6 @@ class ExtractionService:
     async def extract_batch(self, urls: List[str]) -> Optional[Dict[str, Optional[str]]]:
         tasks = [self.extract_url(url) for url in urls]
         results = await asyncio.gather(*tasks)
-        return dict[str, str | None](zip[tuple[str, str | None]](urls, results))
+        return dict[str, str | None](zip(urls, results))
 
 extraction_service = ExtractionService()

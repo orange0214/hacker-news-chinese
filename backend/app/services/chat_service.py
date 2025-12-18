@@ -4,6 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
 from typing import List, AsyncGenerator
+from app.core.config import settings
 from app.core.prompts import Prompts
 from app.repositories.article_repository import article_repository
 from app.schemas.chat import ChatMessage
@@ -12,6 +13,7 @@ from app.schemas.chat import ChatMessage
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
+    google_api_key=settings.gemini_api_key,
     temperature=0.3,
     streaming=True,
     convert_system_message_to_human = False

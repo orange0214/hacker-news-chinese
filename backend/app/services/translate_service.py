@@ -94,7 +94,7 @@ class TranslateService:
 
         results = await asyncio.gather(*tasks)
 
-        return dict[int, AITranslatedResult | None](zip[tuple[int, AITranslatedResult | None]](ids, results))
+        return dict[int, AITranslatedResult | None](zip(ids, results))
         
 
 translate_service = TranslateService()
