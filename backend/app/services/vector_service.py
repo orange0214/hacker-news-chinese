@@ -2,7 +2,6 @@ from typing import List, Dict, Any
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from app.core.config import settings
-from app.db.supabase import get_supabase
 from app.models.article import Article
 from app.core.logger import logger
 from app.repositories.chunk_repository import chunk_repository
@@ -20,8 +19,6 @@ class VectorService:
             length_function = lambda x: len(x.encode("utf-8")),
             separators=["\n\n", "\n", "。", "！", "？", ".", " ", ""]
         )
-
-        self.supabase = get_supabase()
     
     async def  process_and_store_article(self, article: Article):
         try:
@@ -79,6 +76,9 @@ class VectorService:
                 logger.warning(f"[VectorService] Skipped saving chunks for {article.hn_id}: Missing article.id")
                 return
             
+            success = chunk_repository.add_chunks(records)
+            if success:
+                logger.info(f"Stored {len(records)} chunks...")
             
         
 
