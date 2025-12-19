@@ -10,3 +10,10 @@ class VectorService:
             model = "text-embedding-3-small",
             openai_api_key=settings.openai_api_key
         )
+
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size = 1200,
+            chunk_overlap = 300,
+            length_function = lambda x: len(x.encode("utf-8")),
+            separators=["\n\n", "\n", "。", "！", "？", ".", " ", ""]
+        )
