@@ -24,6 +24,7 @@ class Article(BaseModel):
     2. The main article body/content extracted by the crawler (raw_content)
     3. AI-generated results, such as summary, translated_title, detailed_analysis, etc.
     """
+    id: Optional[int] = Field(default=None, description="Database primary key")
     hn_id: int
     type: str
     by: Optional[str] = Field(default=None, description="The username of the item's author")
