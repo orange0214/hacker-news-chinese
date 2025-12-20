@@ -22,6 +22,7 @@ class Settings(BaseSettings):
 
     # OpenAI Configuration
     openai_api_key: str
+    openai_embedding_concurrent_limit: int
 
     # Gemini Configuration
     gemini_base_url: str

@@ -1,3 +1,4 @@
+import asyncio
 from typing import List, Dict, Any
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -5,6 +6,7 @@ from app.core.config import settings
 from app.models.article import Article
 from app.core.logger import logger
 from app.repositories.chunk_repository import chunk_repository
+from app.core.config import settings
 
 class VectorService:
     def __init__(self):
@@ -19,73 +21,87 @@ class VectorService:
             length_function = lambda x: len(x.encode("utf-8")),
             separators=["\n\n", "\n", "。", "！", "？", ".", " ", ""]
         )
-    
-    async def  process_and_store_article(self, article: Article):
-        try:
-            parts = []
+        
+        self.sem = asyncio.Semaphore(settings.openai_embedding_concurrent_limit)
 
-            # (Part A: original description in HN)
-            if article.original_text:
-                parts.append(f"=== Hacker News Description ===\n{article.original_text}")
-            
-            # (Part B: raw content from url)
-            if article.raw_content:
-                parts.append(f"=== Article Content ===\n{article.raw_content}")
-            
-            # (Part C: detailed analysis from LLM)
-            if article.detailed_analysis:
-                analysis = article.detailed_analysis
-                analysis_text = f"""
-                === AI Analysis Report ===
-                Topic: {analysis.topic}
-                Chinese Title: {analysis.title_cn}
-                Summary: {analysis.summary}
-                Key Points: {chr(10).join(analysis.key_points)}
-                Takeaway: {analysis.takeaway}
-                """
-                parts.append(analysis_text)
-            
-            full_text = "\n\n".join(parts)
+    async def process_and_store_article(self, article: Article):
+        async with self.sem:
+            try:
+                parts = []
 
-            if not full_text or len(full_text) < 50:
-                logger.info(f"[VectorService] Article {article.hn_id} content too short, skipping.")
-                return
-            
-            chunks = self.text_splitter.split_text(full_text)
+                # (Part A: original description in HN)
+                if article.original_text:
+                    parts.append(f"=== Hacker News Description ===\n{article.original_text}")
+                
+                # (Part B: raw content from url)
+                if article.raw_content:
+                    parts.append(f"=== Article Content ===\n{article.raw_content}")
+                
+                # (Part C: detailed analysis from LLM)
+                if article.detailed_analysis:
+                    analysis = article.detailed_analysis
+                    analysis_text = f"""
+                    === AI Analysis Report ===
+                    Topic: {analysis.topic}
+                    Chinese Title: {analysis.title_cn}
+                    Summary: {analysis.summary}
+                    Key Points: {chr(10).join(analysis.key_points)}
+                    Takeaway: {analysis.takeaway}
+                    """
+                    parts.append(analysis_text)
+                
+                full_text = "\n\n".join(parts)
 
-            records = []
+                if not full_text or len(full_text) < 50:
+                    logger.info(f"[VectorService] Article {article.hn_id} content too short, skipping.")
+                    return
+                
+                chunks = self.text_splitter.split_text(full_text)
 
-            vectors = await self.embeddings.aembed_documents(chunks)
+                records = []
 
-            for i, chunk in enumerate(chunks):
-                records.append({
-                    "article_id": getattr(article, "id", None),
-                    "content": chunk,
-                    "embedding": vectors[i],
-                    "metadata": {
-                        "source": "combined",
-                        "chunk_index": i,
-                        "title": article.original_title,
-                        "hn_id": article.hn_id
-                    }
-                })
-            
-            records = [r for r in records if r["article_id"] is not None]
+                vectors = await self.embeddings.aembed_documents(chunks)
 
-            if not records:
-                logger.warning(f"[VectorService] Skipped saving chunks for {article.hn_id}: Missing article.id")
-                return
-            
-            success = chunk_repository.add_chunks(records)
-            if success:
-                logger.info(f"Stored {len(records)} chunks...")
-            
+                for i, chunk in enumerate(chunks):
+                    records.append({
+                        "article_id": getattr(article, "id", None),
+                        "content": chunk,
+                        "embedding": vectors[i],
+                        "metadata": {
+                            "source": "combined",
+                            "chunk_index": i,
+                            "title": article.original_title,
+                            "hn_id": article.hn_id
+                        }
+                    })
+                
+                records = [r for r in records if r["article_id"] is not None]
+
+                if not records:
+                    logger.warning(f"[VectorService] Skipped saving chunks for {article.hn_id}: Missing article.id")
+                    return
+                
+                success = chunk_repository.add_chunks(records)
+                if success:
+                    logger.info(f"[VectorService] Stored {len(records)} chunks for article {article.hn_id}")
+
+            except Exception as e:
+                logger.error(f"[VectorService] Error processing article {article.hn_id}: {e}")
+
+    async def process_batch(self, articles: List[Article]):
+        """
+        Batch process vectorization tasks for multiple articles
+        """
+        if not articles:
+            return
+
+        logger.info(f"[VectorService] Starting batch processing for {len(articles)} articles...")
+        
+        tasks = [self.process_and_store_article(article) for article in articles]
+        
+        await asyncio.gather(*tasks)
+        
+        logger.info(f"[VectorService] Batch processing completed.")
         
 
-
-            
-
-            
-
-        except Exception as e:
-            logger.error(f"[VectorService] Error processing article {article.hn_id}: {e}")
+vector_service = VectorService()
