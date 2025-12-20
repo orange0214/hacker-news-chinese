@@ -15,12 +15,14 @@ class ChatRequest(BaseModel):
 
     class Config:
         json_schema_extra = {
-            "examples": {
-                "article_id": 1,
-                "message": "What is the main idea of the article?",
-                "history": [
-                    {"role": "user", "content": "Hello"},
-                    {"role": "assistant", "content": "Hello, how can I help you today?"},
-                ]
-            }
+            "examples": [
+                {
+                    "article_id": 1,
+                    "message": "What is the main idea of the article?",
+                    "history": [
+                        {"role": "user", "content": "Hello"},
+                        {"role": "assistant", "content": "Hello, how can I help you today?"},
+                    ]
+                }
+            ]
         }

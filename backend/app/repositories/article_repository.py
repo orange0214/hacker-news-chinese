@@ -25,7 +25,7 @@ class ArticleRepository:
     
     def add_article(self, article: Article) -> Optional[Article]:
         try:
-            data = article.model_dump(mode="json")
+            data = article.model_dump(mode="json", exclude={"id"})
             response = self.supabase.table(self.table_name).insert(data).execute()
             if response.data:
                 return Article.model_validate(response.data[0])

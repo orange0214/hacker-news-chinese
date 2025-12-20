@@ -7,7 +7,7 @@ class AITranslatedResult(BaseModel):
     topic: str = Field(description="Article topic label")
     title_cn: str = Field(description="Chinese title")
     summary: str = Field(description="In-depth summary")
-    key_points: List[str] = Field(description="Key points", min_items=3, max_items=5)
+    key_points: List[str] = Field(description="Key points", min_items=3, max_items=10)
     tech_stack: List[str] = Field(default_factory=list, description="Tech stack")
     takeaway: str = Field(description="Independent insight")
     ai_score: int = Field(description="AI score", ge=0, le=100)
