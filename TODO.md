@@ -86,14 +86,17 @@
 - 实现chunking以及添加至数据库功能（非并行）
 - 部分实现 vector_service 和 chunk_repository
 
+#### 12/19/2025
+- 实现 process_batch 方法
+- 实现 add_chunks 和 search_similar 方法
+- 
 
 
 TODO:
 - RAG
-  - 完善 VectorService：实现 process_and_store_article 逻辑（内容组合、切分、向量化、存储），添加 asyncio.Semaphore 并发控制，添加 process_batch 方法，更新 search_similar 调用 ChunkRepository
-  - 完善 DocumentChunkRepository：实现 add_chunks 和 search_similar 方法
   - 集成 VectorService 到 NewsIngestor：修改 backend/app/core/news_ingestor.py，收集保存成功的文章，批量调用 vector_service.process_batch
   - 设置一个 scheduler 检索没有被 embedded 的文章存入向量数据库
+  - rewrite prompt
   - 实现全局对话 API：修改 ChatService 添加 stream_global_chat 方法（RAG 检索+生成），在 ChatEndpoint 添加 POST /chat/global 接口
 - chat recommendation
 - RAG chat recommendation
