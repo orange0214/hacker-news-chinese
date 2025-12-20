@@ -102,6 +102,22 @@ class VectorService:
         await asyncio.gather(*tasks)
         
         logger.info(f"[VectorService] Batch processing completed.")
-        
+
+    
+    async def search_similar(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
+        try:
+            query_embedding = await self.embeddings.aembed_query(query)
+
+            results = chunk_repository.search_similar(
+                query_embedding=query_embedding,
+                match_threshold=settings.embedding_match_threshold,
+                match_count=limit
+            )
+
+            return results
+
+        except Exception as e:
+            logger.error(f"[VectorService] Search error: {e}")
+
 
 vector_service = VectorService()

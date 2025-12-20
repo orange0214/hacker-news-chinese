@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     openai_api_key: str
     openai_embedding_concurrent_limit: int
 
+    # Embedding
+    embedding_match_threshold: float
+
     # Gemini Configuration
     gemini_base_url: str
     gemini_api_key: str
