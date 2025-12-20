@@ -18,5 +18,27 @@ class ChunkRepository:
             logger.error(f"Error adding document chunks: {e}")
             return False
 
+    def search_similar(
+        self,
+        query_embedding: List[float],
+        match_threshold: float = 0.5,
+        match_count: int = 5
+    ) -> List[Dict[str, Any]]:
+        try:
+            params = {
+                "query_embedding": query_embedding,
+                "match_threshold": match_threshold,
+                "match_count": match_count,
+                "filter": {}
+            }
+
+            response = self.supabase.rpc("match_documents", params).execute()
+
+            return response.data if response.data else []
+
+        except:
+            logger.error(f"[ChunkRepository] Error searching documents: {e}")
+            return []
+
 
 chunk_repository = ChunkRepository() 
