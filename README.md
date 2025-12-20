@@ -59,31 +59,40 @@ API Documentation: `http://localhost:8000/api/docs`
 
 ```
 .
-├── app/
-│   ├── api/            # API Layer
-│   │   ├── endpoints/  # Route Handlers (articles, auth, health, news)
-│   │   ├── deps.py     # Dependencies
-│   │   └── router.py   # Router Config
-│   ├── core/           # Core Infrastructure
-│   │   ├── config.py   # Settings
-│   │   ├── news_ingestor.py # News Aggregation Logic
-│   │   ├── prompts.py  # AI Prompts
-│   │   └── scheduler.py# Task Scheduling
-│   ├── db/             # Database Client (Supabase)
-│   ├── models/         # Internal Data Models
-│   ├── repositories/   # Data Access Layer
-│   ├── schemas/        # Pydantic Schemas (DTOs)
-│   │   └── external/   # External API Schemas
-│   ├── services/       # Business Logic Services
-│   │   ├── contexts/   # Context Management
-│   │   ├── article_service.py
-│   │   ├── extraction_service.py
-│   │   ├── hn_service.py
-│   │   └── translate_service.py
-│   └── main.py         # Application Entry Point
-├── db/                 # SQL Scripts & Schemas
-│   └── schema.sql
-└── tests/              # Test Suite
+├── backend/
+│   ├── app/
+│   │   ├── api/            # API Layer
+│   │   │   ├── endpoints/  # Route Handlers (articles, auth, chat, health, news)
+│   │   │   ├── deps.py     # Dependencies
+│   │   │   └── router.py   # Router Config
+│   │   ├── core/           # Core Infrastructure
+│   │   │   ├── config.py   # Settings
+│   │   │   ├── decorators.py
+│   │   │   ├── logger.py
+│   │   │   ├── news_ingestor.py # News Aggregation Logic
+│   │   │   ├── prompts.py  # AI Prompts
+│   │   │   └── scheduler.py# Task Scheduling
+│   │   ├── db/             # Database Client (Supabase)
+│   │   ├── models/         # Internal Data Models
+│   │   ├── repositories/   # Data Access Layer
+│   │   ├── schemas/        # Pydantic Schemas (DTOs)
+│   │   │   └── external/   # External API Schemas
+│   │   ├── services/       # Business Logic Services
+│   │   │   ├── contexts/   # Context Management
+│   │   │   ├── article_service.py
+│   │   │   ├── auth_service.py
+│   │   │   ├── chat_service.py
+│   │   │   ├── extraction_service.py
+│   │   │   ├── hn_service.py
+│   │   │   ├── translate_service.py
+│   │   │   └── vector_service.py
+│   │   └── main.py         # Application Entry Point
+│   └── tests/              # Test Suite
+├── db/                     # SQL Scripts & Schemas
+│   ├── functions/          # Database Functions
+│   ├── article.sql
+│   └── document_chunk.sql
+└── frontend/               # Frontend Application
 ```
 
 ## Development Status
