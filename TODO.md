@@ -103,9 +103,10 @@ TODO:
 - RAG chat recommendation
 - 前端
 - 第三方登录 （github, google）
-- 提取模型到config，env
+- 提取模型及各种参数于config，env
 - 研究AI翻译总结的高性能prompt（prompt training）
 - 用户收藏实现
 - 评论
 - 扫描更新文章
+- Agent: 实现对于文章的深度调研
 - （Post-MVP）：集成多模态视觉模型（Vision Model），对文章中的关键图片进行语义描述提取，并作为上下文输入给 LLM 以生成更完整的总结。
