@@ -7,6 +7,7 @@ from app.models.article import Article
 from app.core.logger import logger
 from app.repositories.chunk_repository import chunk_repository
 from app.core.config import settings
+from app.core.decorators import monitor_news_ingestor
 
 class VectorService:
     def __init__(self):
@@ -79,30 +80,30 @@ class VectorService:
 
                 if not records:
                     logger.warning(f"[VectorService] Skipped saving chunks for {article.hn_id}: Missing article.id")
-                    return
+                    return False
                 
                 success = chunk_repository.add_chunks(records)
                 if success:
                     logger.info(f"[VectorService] Stored {len(records)} chunks for article {article.hn_id}")
+                    return True
 
             except Exception as e:
                 logger.error(f"[VectorService] Error processing article {article.hn_id}: {e}")
+                return False
 
-    async def process_batch(self, articles: List[Article]):
+    @monitor_news_ingestor(step_name="Vectorization-Batch")
+    async def process_and_store_articles_batch(self, articles: List[Article]):
         """
         Batch process vectorization tasks for multiple articles
         """
         if not articles:
             return
 
-        logger.info(f"[VectorService] Starting batch processing for {len(articles)} articles...")
-        
         tasks = [self.process_and_store_article(article) for article in articles]
         
-        await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks)
         
-        logger.info(f"[VectorService] Batch processing completed.")
-
+        return results
     
     async def search_similar(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
         try:

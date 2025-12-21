@@ -10,7 +10,6 @@ from app.repositories.article_repository import article_repository
 from app.schemas.chat import ChatMessage
 
 
-
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
     google_api_key=settings.gemini_api_key,

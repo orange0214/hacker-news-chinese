@@ -5,6 +5,7 @@ from app.services.translate_service import translate_service
 from app.repositories.article_repository import article_repository
 from app.models.article import Article
 from app.services.contexts.story_contexts import StoryContext
+from app.services.vector_service import vector_service
 from app.core.decorators import monitor_news_ingestor
 from app.core.logger import logger
 
@@ -51,19 +52,31 @@ class NewsIngestor:
         
         # 4. Save to Database
         saved_count = 0
+        saved_articles: List[Article] = []
+
         for ctx in valid_contexts:
             if ctx.ai_result:
                 try:
                     article: Article = ctx.to_article()
-                    result = article_repository.add_article(article)
-                    if result:
+                    saved_article = article_repository.add_article(article)
+                    if saved_article:
                         saved_count += 1
+                        saved_articles.append(saved_article)
                     else:
                         logger.error(f"[NewsIngestor] Failed to save story {ctx.story.hn_id}: Insert returned None")
                 except Exception as e:
                     logger.error(f"[NewsIngestor] Failed to save story {ctx.story.hn_id}: {e}")
 
         logger.info(f"Successfully saved {saved_count} articles.")
-        return valid_contexts
+
+        # 5. Batch Vectorization
+        if saved_articles:
+            logger.info(f"[NewsIngestor] Starting vectorization for {len(saved_articles)} new articles...")
+            try:
+                results = await vector_service.process_and_store_articles_batch(saved_articles)
+            except Exception as e:
+                logger.error(f"[NewsIngestor] vectorization batch failed: {e}")
+
+        return results
 
 news_ingestor = NewsIngestor()
