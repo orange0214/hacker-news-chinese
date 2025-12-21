@@ -80,13 +80,13 @@ class NewsIngestor:
 
         return results
     
-    async def process_failed_embeddings(self, limit: int = 10):
+    async def process_failed_embeddings(self, limit: int):
         """
         Backfill/Retry logic for articles that missed vectorization.
         Triggered by a scheduler job.
         """
         try:
-            pending_articles = article_repository.get_articles_without_embedding(limit=10)
+            pending_articles = article_repository.get_articles_without_embedding(limit)
             
             if not pending_articles:
                 return []

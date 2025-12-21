@@ -11,7 +11,7 @@ async def start_scheduler():
     try:
         scheduler.add_job(
             news_ingestor.run,
-            trigger=IntervalTrigger(hours=settings.scheduler_interval_hours),
+            trigger=IntervalTrigger(hours=settings.scheduler_news_ingestor_interval_hours),
             id="news_ingestor_task",
             name="News Ingestor Pipeline",
             replace_existing=True,
@@ -19,8 +19,8 @@ async def start_scheduler():
         )
 
         scheduler.add_job(
-            news_ingestor.process_failed_embeddings,
-            trigger=IntervalTrigger(minutes=30),
+            news_ingestor.process_failed_embeddings(limit=settings.openai_embedding_concurrent_limit),
+            trigger=IntervalTrigger(minutes=settings.scheduler_back_fill_embedding_interval_minutes),
             id="backfill_vectors_task",
             name="Backfill Vectors",
             replace_existing=True,

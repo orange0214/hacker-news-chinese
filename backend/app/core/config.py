@@ -5,7 +5,8 @@ class Settings(BaseSettings):
     log_level: str
 
     # Scheduler Configuration
-    scheduler_interval_hours: int
+    scheduler_news_ingestor_interval_hours: int
+    scheduler_back_fill_embedding_interval_minutes: int
 
     # Supabase Configuration
     supabase_url: str
