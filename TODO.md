@@ -89,14 +89,20 @@
 #### 12/19/2025
 - 实现 process_batch 方法
 - 实现 add_chunks 和 search_similar 方法
+
+#### 12/20/2025
+- 整合 vectorization 进入 pipeline
 - 
 
 
 TODO:
 - RAG
-  - 集成 VectorService 到 NewsIngestor：修改 backend/app/core/news_ingestor.py，收集保存成功的文章，批量调用 vector_service.process_batch
-  - 设置一个 scheduler 检索没有被 embedded 的文章存入向量数据库
-  - rewrite prompt
+  - 设置一个 scheduler 检索没有被 vectorization 的文章存入向量数据库
+    - DB Migration: articles 表加字段 is_embedded。
+    - Repo Update: 加查询和更新方法。
+    - Service Update: process_and_store_article 成功后需更新该字段。
+    - Scheduler: 新增定时任务调用上述逻辑。
+  - rewrite 用户输入的 prompt
   - 实现全局对话 API：修改 ChatService 添加 stream_global_chat 方法（RAG 检索+生成），在 ChatEndpoint 添加 POST /chat/global 接口
 - chat recommendation
 - RAG chat recommendation

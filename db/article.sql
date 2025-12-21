@@ -24,6 +24,8 @@ create table public.articles (
   
   raw_content text,                       -- Crawled webpage content or HN text (for RAG)
   image_urls text[],                      -- Array of image URLs from the article
+
+  is_embedded boolean,
   
   detailed_analysis jsonb,                -- Structured analysis (JSON)
   comment_analysis jsonb,                 -- Comment analysis (JSON)
@@ -35,6 +37,7 @@ create table public.articles (
 create index articles_score_idx on public.articles (score desc);
 create index articles_posted_at_idx on public.articles (posted_at desc);
 create index articles_hn_id_idx on public.articles (hn_id);
+create index articles_is_embedded_idx on public.articles (is_embedded)
 
 -- Enable Row Level Security (RLS)
 alter table public.articles enable row level security;

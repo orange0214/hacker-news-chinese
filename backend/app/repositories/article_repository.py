@@ -58,7 +58,7 @@ class ArticleRepository:
     def get_article_by_id(self, article_id: int) -> Optional[Article]:
         try:
             result = self.supabase.table(self.table_name)\
-                .select("hn_id, type, by, posted_at, original_title, original_url, original_text, score, raw_content, detailed_analysis")\
+                .select("hn_id, type, by, posted_at, original_title, original_url, original_text, score, raw_content, detailed_analysis, is_embedded")\
                 .eq("id", article_id)\
                 .single()\
                 .execute()
@@ -66,5 +66,31 @@ class ArticleRepository:
         except Exception as e:
             logger.error(f"Error getting article by article_id {article_id}: {e}")
             return None
+
+    def get_articles_without_embedding(self, limit: int = 10) -> List[Article]:
+        try:
+            result = self.supabase.table(self.table_name)\
+                .select("*")\
+                .eq("is_embedded", False)\
+                .order("id", desc=True)\
+                .limit(limit)\
+                .execute()
+            
+            if result.data:
+                return [Article.model_validate(item) for item in result.data]
+        except Exception as e:
+            logger.error(f"[ArticleRepository] Error getting pending embedding articles: {e}")
+            return []
+
+    def mark_article_embedded(self, article_id: int) -> bool:
+        try:
+            response = self.supabase.table(self.table_name)\
+                .update({"is_embedded": True})\
+                .eq("id", article_id)\
+                .execute()
+                
+            return bool(response.data)
+        except Exception as e:
+            logger.error(f"[ArticleRepository] Error marking article {article_id} as embedded: {e}")
 
 article_repository = ArticleRepository()

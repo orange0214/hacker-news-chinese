@@ -47,6 +47,8 @@ class Article(BaseModel):
     raw_content: str
     image_urls: Optional[List[str]]
 
+    is_embedded: bool = Field(default=False, description="Article has been vectorized")
+
     detailed_analysis: Optional[AITranslatedResult]
     comment_analysis: Optional[List[CommentAnalysis]]
     
