@@ -6,6 +6,7 @@ from app.core.config import settings
 from app.models.article import Article
 from app.core.logger import logger
 from app.repositories.chunk_repository import chunk_repository
+from app.repositories.article_repository import article_repository
 from app.core.config import settings
 from app.core.decorators import monitor_news_ingestor
 
@@ -84,7 +85,11 @@ class VectorService:
                 
                 success = chunk_repository.add_chunks(records)
                 if success:
-                    logger.info(f"[VectorService] Stored {len(records)} chunks for article {article.hn_id}")
+                    mark_success = article_repository.mark_article_embedded(article.id)
+                    if mark_success:
+                         logger.info(f"[VectorService] Stored {len(records)} chunks & marked embedded for {article.hn_id}")
+                    else:
+                         logger.warning(f"[VectorService] Stored chunks but FAILED to mark embedded for {article.hn_id}")
                     return True
 
             except Exception as e:
