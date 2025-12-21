@@ -3,6 +3,7 @@ from app.db.supabase import get_supabase
 from app.models.article import Article
 from app.core.logger import logger
 from app.schemas.article import SortField, SortOrder
+from datetime import datetime, timedelta, timezone
 
 class ArticleRepository:
     def __init__(self):
@@ -69,15 +70,19 @@ class ArticleRepository:
 
     def get_articles_without_embedding(self, limit: int = 10) -> List[Article]:
         try:
+            cutoff_time = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+
             result = self.supabase.table(self.table_name)\
                 .select("*")\
                 .eq("is_embedded", False)\
+                .lt("created_at", cutoff_time)\
                 .order("id", desc=True)\
                 .limit(limit)\
                 .execute()
             
             if result.data:
                 return [Article.model_validate(item) for item in result.data]
+            return []
         except Exception as e:
             logger.error(f"[ArticleRepository] Error getting pending embedding articles: {e}")
             return []
@@ -88,7 +93,7 @@ class ArticleRepository:
                 .update({"is_embedded": True})\
                 .eq("id", article_id)\
                 .execute()
-                
+
             return bool(response.data)
         except Exception as e:
             logger.error(f"[ArticleRepository] Error marking article {article_id} as embedded: {e}")

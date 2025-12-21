@@ -12,7 +12,6 @@ from app.core.logger import logger
 class NewsIngestor:
     @monitor_news_ingestor(step_name="Ingestion-Pipeline-Main")
     async def run(self) -> List[StoryContext]:
-
         # 1. Fetch all stories from HN
         raw_stories = await hn_service.fetch_all_stories()
         if not raw_stories:
@@ -69,6 +68,8 @@ class NewsIngestor:
 
         logger.info(f"Successfully saved {saved_count} articles.")
 
+        results = []
+
         # 5. Batch Vectorization
         if saved_articles:
             logger.info(f"[NewsIngestor] Starting vectorization for {len(saved_articles)} new articles...")
@@ -78,5 +79,25 @@ class NewsIngestor:
                 logger.error(f"[NewsIngestor] vectorization batch failed: {e}")
 
         return results
+    
+    async def process_failed_embeddings(self, limit: int = 10):
+        """
+        Backfill/Retry logic for articles that missed vectorization.
+        Triggered by a scheduler job.
+        """
+        try:
+            pending_articles = article_repository.get_articles_without_embedding(limit=10)
+            
+            if not pending_articles:
+                return []
+            
+            logger.info(f"[NewsIngestor] Backfill: Found {len(pending_articles)}")
+
+            results = await vector_service.process_and_store_articles_batch(pending_articles)
+            return results
+
+        except Exception as e:
+            logger.error(f"")
+            return []
 
 news_ingestor = NewsIngestor()

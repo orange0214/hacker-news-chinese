@@ -18,6 +18,15 @@ async def start_scheduler():
             next_run_time=datetime.now()
         )
 
+        scheduler.add_job(
+            news_ingestor.process_failed_embeddings,
+            trigger=IntervalTrigger(minutes=30),
+            id="backfill_vectors_task",
+            name="Backfill Vectors",
+            replace_existing=True,
+            next_run_time=datetime.now()
+        )
+
         scheduler.start()
         logger.bind(type="news_ingestor", step="Scheduler").info("Scheduler started. Task scheduled every 12h.")
         
