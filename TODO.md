@@ -94,6 +94,8 @@
 - 整合 vectorization 进入 pipeline
 - 设置一个 scheduler 检索没有被 vectorization 的文章存入向量数据库
 
+#### 12/21/2025
+- 
 
 TODO:
 - RAG
@@ -102,7 +104,10 @@ TODO:
 - chat recommendation
 - RAG chat recommendation
 - 前端
-- 第三方登录 （github, google）
+- RAG 引入Hybrid Search
+  - RRF方案得到结果
+  - 分词以及关键词索引
+- 第三方登录（github, google）
 - 提取模型及各种参数于config，env
 - 研究AI翻译总结的高性能prompt（prompt training）
 - 用户收藏实现
