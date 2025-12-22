@@ -95,6 +95,9 @@
 - 设置一个 scheduler 检索没有被 vectorization 的文章存入向量数据库
 
 #### 12/21/2025
+- 更新 prompt
+
+#### 12/22/2025
 - 
 
 TODO:
