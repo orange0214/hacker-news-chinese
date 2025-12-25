@@ -19,7 +19,8 @@ async def start_scheduler():
         )
 
         scheduler.add_job(
-            news_ingestor.process_failed_embeddings(limit=settings.openai_embedding_concurrent_limit),
+            news_ingestor.process_failed_embeddings,
+            kwargs={"limit": settings.openai_embedding_concurrent_limit},
             trigger=IntervalTrigger(minutes=settings.scheduler_back_fill_embedding_interval_minutes),
             id="backfill_vectors_task",
             name="Backfill Vectors",
