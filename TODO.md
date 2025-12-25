@@ -98,7 +98,8 @@
 - 更新 prompt
 
 #### 12/24/2025
-- 
+- 定义 rewrite query 方法
+- 增加 global message 类
 
 TODO:
 - RAG

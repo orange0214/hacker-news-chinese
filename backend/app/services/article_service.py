@@ -1,4 +1,5 @@
 import math
+from fastapi import HTTPException
 from typing import List
 from app.repositories.article_repository import article_repository
 from app.schemas.article import ArticleFilterParams, ArticleSchema, ArticleListResponse
@@ -25,5 +26,18 @@ class ArticleService:
             size=params.size,
             total_pages=total_pages,
         )
+    
+    async def get_article_context(self, article_id: int) -> dict:
+        # get article context from database
+        data = article_repository.get_article_by_id(article_id)
+        if not data:
+            raise HTTPException(status_code=404, detail="Article not found")
+
+        return {
+            "original_title": data.original_title,
+            "original_text": data.original_text or "(No original text)",
+            "raw_content": data.raw_content or "(No raw content)",
+            "detailed_analysis": data.detailed_analysis.model_dump_json() if data.detailed_analysis else "(No detailed analysis)",
+        }
 
 article_service = ArticleService()

@@ -6,6 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 from typing import List, AsyncGenerator
 from app.core.config import settings
 from app.core.prompts import Prompts
+from app.services.article_service import article_service
 from app.repositories.article_repository import article_repository
 from app.schemas.chat import ChatMessage
 
@@ -37,18 +38,6 @@ global_chat_prompt_template = ChatPromptTemplate.from_messages([
 ])
 
 class ChatService:
-    async def get_article_context(self, article_id: int) -> dict:
-        # get article context from database
-        data = article_repository.get_article_by_id(article_id)
-        if not data:
-            raise HTTPException(status_code=404, detail="Article not found")
-
-        return {
-            "original_title": data.original_title,
-            "original_text": data.original_text or "(No original text)",
-            "raw_content": data.raw_content or "(No raw content)",
-            "detailed_analysis": data.detailed_analysis.model_dump_json() if data.detailed_analysis else "(No detailed analysis)",
-        }
     
     def _convert_history(self, history: List[ChatMessage]) -> List[BaseMessage]:
         lc_history = []
@@ -58,9 +47,10 @@ class ChatService:
             elif msg.role == "assistant":
                 lc_history.append(AIMessage(content=msg.content))
         return lc_history
+
     
     async def stream_chat(self, article_id: int, message: str, history: List[ChatMessage]) -> AsyncGenerator[str, None]:
-        article_data = await self.get_article_context(article_id)
+        article_data = await article_service.get_article_context(article_id)
 
         chain = prompt_template | llm | StrOutputParser()
 
@@ -75,6 +65,7 @@ class ChatService:
             "message": message
         }):
             yield chunk
+    
 
     async def _rewrite_query(self, message: str, history: List[ChatMessage]) -> str:
         lc_history = self._convert_history(history)
@@ -87,5 +78,7 @@ class ChatService:
         })
 
         return rewritten_query.strip()
+
+
 
 chat_service = ChatService()
