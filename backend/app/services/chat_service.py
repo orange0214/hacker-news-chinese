@@ -105,8 +105,7 @@ class ChatService:
 
         context_str = self._build_rag_context(search_results)
 
-        chain = global_chat_prompt_template | llm | StrOutputParser
-
+        chain = global_chat_prompt_template | llm | StrOutputParser()
         lc_history = self._convert_history(history)
 
         async for chunk in chain.astream({
