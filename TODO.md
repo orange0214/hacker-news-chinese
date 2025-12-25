@@ -101,6 +101,10 @@
 - 定义 rewrite query 方法
 - 增加 global message 类
 
+#### 12/25/2025
+- 实现global chat service
+- 
+
 TODO:
 - RAG
   - rewrite 用户输入的 prompt

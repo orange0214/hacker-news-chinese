@@ -4,6 +4,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from app.core.config import settings
 from app.models.article import Article
+from app.models.chunk import DocumentChunk, DocumentChunkMetadata
 from app.core.logger import logger
 from app.repositories.vector_repository import vector_repository
 from app.repositories.article_repository import article_repository
@@ -59,26 +60,23 @@ class VectorService:
                     return
                 
                 chunks = self.text_splitter.split_text(full_text)
-                # TODO: 将record封装在models内
-                records = []
 
+                records = []
                 vectors = await self.embeddings.aembed_documents(chunks)
 
                 for i, chunk in enumerate(chunks):
-                    records.append({
-                        "article_id": getattr(article, "id", None),
-                        "content": chunk,
-                        "embedding": vectors[i],
-                        "metadata": {
-                            "source": "combined",
-                            "chunk_index": i,
-                            "title": article.original_title,
-                            "hn_id": article.hn_id
-                        }
-                    })
+                    doc_chunk = DocumentChunk(
+                        article_id=article.id,
+                        content=chunk,
+                        embedding=vectors[i],
+                        metadata=DocumentChunkMetadata(
+                            chunk_index=i,
+                            title=article.original_title,
+                            hn_id=article.hn_id
+                        )
+                    )
+                    records.append(doc_chunk)
                 
-                records = [r for r in records if r["article_id"] is not None]
-
                 if not records:
                     logger.warning(f"[VectorService] Skipped saving chunks for {article.hn_id}: Missing article.id")
                     return False
