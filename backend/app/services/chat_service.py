@@ -77,9 +77,6 @@ class ChatService:
             yield chunk
 
     async def _rewrite_query(self, message: str, history: List[ChatMessage]) -> str:
-        if not history:
-            return message
-        
         lc_history = self._convert_history(history)
 
         rewrite_chain = rewrite_prompt_template | llm | StrOutputParser()
