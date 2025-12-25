@@ -26,3 +26,23 @@ class ChatRequest(BaseModel):
                 }
             ]
         }
+
+class GlobalChatRequest(BaseModel):
+    message: str = Field(description="message from user")
+    history: List[ChatMessage] = Field(
+        default=[],
+        description="history of the conversation"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "examples": [
+                {
+                    "message": "What are the latest articles about Rust?",
+                    "history": [
+                        {"role": "user", "content": "Hello"},
+                        {"role": "assistant", "content": "Hello, how can I help you today?"},
+                    ]
+                }
+            ]
+        }

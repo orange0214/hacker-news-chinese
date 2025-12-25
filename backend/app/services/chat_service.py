@@ -24,6 +24,18 @@ prompt_template = ChatPromptTemplate.from_messages([
     ("human", "{message}")
 ])
 
+rewrite_prompt_template = ChatPromptTemplate.from_messages([
+    ("system", Prompts.QUERY_REWRITE_SYSTEM),
+    MessagesPlaceholder("history"),
+    ("human", "{message}")
+])
+
+global_chat_prompt_template = ChatPromptTemplate.from_messages([
+    ("system", Prompts.GLOBAL_CHAT_SYSTEM_PROMPT),
+    MessagesPlaceholder("history"),
+    ("human", "{message}")
+])
+
 class ChatService:
     async def get_article_context(self, article_id: int) -> dict:
         # get article context from database
@@ -63,5 +75,20 @@ class ChatService:
             "message": message
         }):
             yield chunk
+
+    async def _rewrite_query(self, message: str, history: List[ChatMessage]) -> str:
+        if not history:
+            return message
+        
+        lc_history = self._convert_history(history)
+
+        rewrite_chain = rewrite_prompt_template | llm | StrOutputParser()
+
+        rewritten_query = await rewrite_chain.ainvoke({
+            "history": lc_history,
+            "message": message
+        })
+
+        return rewritten_query.strip()
 
 chat_service = ChatService()
