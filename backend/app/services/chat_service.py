@@ -6,8 +6,9 @@ from langchain_core.output_parsers import StrOutputParser
 from typing import List, AsyncGenerator
 from app.core.config import settings
 from app.core.prompts import Prompts
+from app.core.logger import logger
 from app.services.article_service import article_service
-from app.repositories.article_repository import article_repository
+from app.services.vector_service import vector_service
 from app.schemas.chat import ChatMessage
 
 
@@ -78,6 +79,42 @@ class ChatService:
         })
 
         return rewritten_query.strip()
+
+    def _build_rag_context(self, search_results: List[dict]) -> str:
+        if not search_results:
+            return "数据库中暂无相关文章涉及此话题。"
+            
+        context_parts = []
+        for i, res in enumerate(search_results):
+            meta = res.get("metadata", {})
+            title = meta.get("title", "Unknown Title")
+            hn_id = meta.get("hn_id", "Unknown ID")
+            chunk_content = res.get("content", "")
+            
+            part = f"--- Document {i+1} (Title: {title}, ID: {hn_id}) ---\n{chunk_content}\n"
+            context_parts.append(part)
+        
+        return "\n".join(context_parts)
+
+    async def stream_global_chat(self, message: str, history) -> AsyncGenerator[str, None]:
+        search_query = await self._rewrite_query(message, history)
+        # TODO: use a logger file to store all info
+        logger.info(f"[GlobalChat] Original: {message} -> Rewritten: {search_query}")
+        # limit can be edited in the frontend
+        search_results = await vector_service.search_similar(search_query, limit = 5)
+
+        context_str = self._build_rag_context(search_results)
+
+        chain = global_chat_prompt_template | llm | StrOutputParser
+
+        lc_history = self._convert_history(history)
+
+        async for chunk in chain.astream({
+            "context": context_str,
+            "history": lc_history,
+            "message": message
+        }):
+            yield chunk
 
 
 

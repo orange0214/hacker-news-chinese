@@ -2,7 +2,7 @@ from app.db.supabase import get_supabase
 from typing import List, Dict, Any
 from app.core.logger import logger
 
-class ChunkRepository:
+class VectorRepository:
     def __init__(self):
         self.table_name = "document_chunks"
     
@@ -36,9 +36,9 @@ class ChunkRepository:
 
             return response.data if response.data else []
 
-        except:
+        except Exception as e:
             logger.error(f"[ChunkRepository] Error searching documents: {e}")
             return []
 
 
-chunk_repository = ChunkRepository() 
+vector_repository = VectorRepository() 

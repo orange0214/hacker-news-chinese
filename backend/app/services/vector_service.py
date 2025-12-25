@@ -5,7 +5,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from app.core.config import settings
 from app.models.article import Article
 from app.core.logger import logger
-from app.repositories.chunk_repository import chunk_repository
+from app.repositories.vector_repository import vector_repository
 from app.repositories.article_repository import article_repository
 from app.core.config import settings
 from app.core.decorators import monitor_news_ingestor
@@ -59,7 +59,7 @@ class VectorService:
                     return
                 
                 chunks = self.text_splitter.split_text(full_text)
-
+                # TODO: 将record封装在models内
                 records = []
 
                 vectors = await self.embeddings.aembed_documents(chunks)
@@ -83,7 +83,7 @@ class VectorService:
                     logger.warning(f"[VectorService] Skipped saving chunks for {article.hn_id}: Missing article.id")
                     return False
                 
-                success = chunk_repository.add_chunks(records)
+                success = vector_repository.add_chunks(records)
                 if success:
                     mark_success = article_repository.mark_article_embedded(article.id)
                     if mark_success:
@@ -114,7 +114,7 @@ class VectorService:
         try:
             query_embedding = await self.embeddings.aembed_query(query)
 
-            results = chunk_repository.search_similar(
+            results = vector_repository.search_similar(
                 query_embedding=query_embedding,
                 match_threshold=settings.embedding_match_threshold,
                 match_count=limit
@@ -124,6 +124,5 @@ class VectorService:
 
         except Exception as e:
             logger.error(f"[VectorService] Search error: {e}")
-
 
 vector_service = VectorService()

@@ -84,7 +84,7 @@
 
 #### 12/18/2025
 - 实现chunking以及添加至数据库功能（非并行）
-- 部分实现 vector_service 和 chunk_repository
+- 部分实现 vector_service 和 vector_repository
 
 #### 12/19/2025
 - 实现 process_batch 方法
@@ -105,6 +105,7 @@ TODO:
 - RAG
   - rewrite 用户输入的 prompt
   - 实现全局对话 API：修改 ChatService 添加 stream_global_chat 方法（RAG 检索+生成），在 ChatEndpoint 添加 POST /chat/global 接口
+- 将 vector_service 以及chunk_repository内的records封装如models/内
 - chat recommendation
 - RAG chat recommendation
 - 前端
