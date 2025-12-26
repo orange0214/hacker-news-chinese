@@ -115,6 +115,4 @@ class ChatService:
         }):
             yield chunk
 
-
-
 chat_service = ChatService()
