@@ -103,13 +103,16 @@
 
 #### 12/25/2025
 - 实现global chat service
-- 
+- 抽离chunk至DTO
+- 实现global chat endpoint
+- 前端进行初始化
+
 
 TODO:
-- RAG
-  - rewrite 用户输入的 prompt
-  - 实现全局对话 API：修改 ChatService 添加 stream_global_chat 方法（RAG 检索+生成），在 ChatEndpoint 添加 POST /chat/global 接口
-- 将 vector_service 以及chunk_repository内的records封装如models/内
+- 前端
+  - 增加文章详情页
+  - 修改chat展示逻辑
+- 解决幻觉问题
 - chat recommendation
 - RAG chat recommendation
 - 前端
