@@ -59,7 +59,7 @@ class ArticleRepository:
     def get_article_by_id(self, article_id: int) -> Optional[Article]:
         try:
             result = self.supabase.table(self.table_name)\
-                .select("hn_id, type, by, posted_at, original_title, original_url, original_text, score, raw_content, detailed_analysis, is_embedded")\
+                .select("id, hn_id, type, by, posted_at, original_title, original_url, original_text, score, raw_content, detailed_analysis, is_embedded")\
                 .eq("id", article_id)\
                 .single()\
                 .execute()

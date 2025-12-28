@@ -107,6 +107,8 @@
 - 实现global chat endpoint
 - 前端进行初始化
 
+#### 12/27/2025
+- 
 
 TODO:
 - 前端

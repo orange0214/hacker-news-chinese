@@ -26,6 +26,13 @@ class ArticleService:
             size=params.size,
             total_pages=total_pages,
         )
+
+    async def get_article_detail(self, article_id: int) -> ArticleSchema:
+        article = article_repository.get_article_by_id(article_id)
+        if not article:
+            raise HTTPException(status_code=404, detail="Article not found")
+        
+        return ArticleSchema.model_validate(article)
     
     async def get_article_context(self, article_id: int) -> dict:
         # get article context from database
