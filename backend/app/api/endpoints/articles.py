@@ -15,7 +15,7 @@ async def list_articles(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Internal server error: {str(e)}")
 
 
-@router.get(f"/{article_id}", response_model=ArticleSchema)
+@router.get("/{article_id}", response_model=ArticleSchema)
 async def get_article(article_id: int):
     try:
         return article_service.get_article_detail(article_id)
