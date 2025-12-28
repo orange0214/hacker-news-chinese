@@ -18,7 +18,7 @@ async def list_articles(
 @router.get("/{article_id}", response_model=ArticleSchema)
 async def get_article(article_id: int):
     try:
-        return article_service.get_article_detail(article_id)
+        return await article_service.get_article_detail(article_id)
     except HTTPException as he:
         raise he
     except Exception as e:
