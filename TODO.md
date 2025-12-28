@@ -108,7 +108,7 @@
 - 前端进行初始化
 
 #### 12/27/2025
-- 
+- 增加 endpoint for article_id
 
 TODO:
 - 前端
