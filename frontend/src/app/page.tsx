@@ -63,10 +63,10 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container max-w-4xl mx-auto px-4 py-8">
         {status === "pending" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
+          <div className="flex flex-col gap-6">
+            {[...Array(3)].map((_, i) => (
               <div key={i} className="h-64 rounded-xl border border-muted bg-muted/20 animate-pulse" />
             ))}
           </div>
@@ -76,7 +76,7 @@ export default function Home() {
             <Button onClick={() => refetch()}>Try Again</Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-col gap-8">
             {data.pages.map((page) =>
               page.items.map((article) => (
                 <ArticleCard key={article.id} article={article} />

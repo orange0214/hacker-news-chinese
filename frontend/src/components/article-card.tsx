@@ -8,6 +8,8 @@ import { CalendarIcon, MessageSquareIcon, ExternalLinkIcon, StarIcon } from "luc
 import ReactMarkdown from "react-markdown";
 import { useChatStore } from "@/stores/chat";
 
+import Link from "next/link";
+
 interface ArticleCardProps {
     article: ArticleSchema;
 }
@@ -25,16 +27,21 @@ export function ArticleCard({ article }: ArticleCardProps) {
         <Card className="flex flex-col h-full transition-all duration-300 hover:border-primary/50 hover:shadow-lg border-muted">
             <CardHeader className="pb-3">
                 <div className="flex justify-between items-start gap-4">
-                    <CardTitle className="text-lg font-bold leading-tight tracking-tight">
-                        <a
-                            href={article.original_url || "#"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:text-primary transition-colors flex items-center gap-2"
-                        >
-                            {article.detailed_analysis?.title_cn || article.original_title}
-                            <ExternalLinkIcon className="w-4 h-4 opacity-50" />
-                        </a>
+                    <CardTitle className="text-2xl font-bold leading-tight tracking-tight">
+                        <div className="flex flex-col gap-2">
+                            <Link href={`/articles/${article.id}`} className="hover:text-primary transition-colors cursor-pointer">
+                                {article.detailed_analysis?.title_cn || article.original_title}
+                            </Link>
+                            <a
+                                href={article.original_url || "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-normal text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 w-fit"
+                            >
+                                {article.original_title}
+                                <ExternalLinkIcon className="w-3 h-3 opacity-50" />
+                            </a>
+                        </div>
                     </CardTitle>
                     <Badge variant="secondary" className="shrink-0 flex gap-1 items-center">
                         <StarIcon className="w-3 h-3 text-yellow-500" />
