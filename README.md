@@ -2,7 +2,7 @@
 
 **Hacker News Chinese** is an AI-powered technology news aggregation platform designed to break language barriers. It automatically collects trending articles from Hacker News and leverages large language models (LLMs) to generate Chinese summaries and translations, helping users efficiently access high-quality technical information.
 
-## Core Functions:
+## Core Features
 
 - **Automatic Aggregation**: Periodically fetches Hacker News Top Stories.
 - **Intelligent Extraction**: 
@@ -16,50 +16,42 @@
     - **Global Knowledge Search**: Semantic search and Q&A across the entire article history using vector database.
 - **Data Persistence**: Stores article metadata and analysis results in a structured manner to Supabase.
 
-## Tech Stack:
+## Tech Stack
 
 - **Backend**: FastAPI (Python 3.12+)
 - **Database**: Supabase (PostgreSQL + pgvector)
-- **AI Services**: Gemini (Summarization), Jina Reader (Extraction)
-- **Tooling**: uv (Package Management), Loguru (Logging), APScheduler (Task Scheduling)
+- **AI/Tools**: Gemini, Jina Reader, uv, Loguru, APScheduler
+
+### Frontend
+- **Framework**: Next.js 16 (React 19)
+- **Styling**: Tailwind CSS 4, Shadcn UI
+- **State**: Zustand
 
 ## Quick Start
 
-### 1. Prerequisites
-- Python 3.12+
-- [uv](https://github.com/astral-sh/uv)
-
-### 2. Installation
-
+### 1. Backend Setup
 ```bash
-git clone <repository-url>
-cd Hacker_News_Chinese
+cd backend
 uv sync
-```
-
-### 3. Configuration
-
-Refer to `.env.example`, create a `.env` file, and fill in the configuration:
-
-### 4. Running the Service
-
-```bash
-# Development Mode
-uv run uvicorn app.main:app --reload
-# Or
+# Configure environment variables in .env
 uv run dev
-
-# Or use Makefile (if available)
-make run
 ```
 
-API Documentation: `http://localhost:8000/api/docs`
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+- API Docs: `http://localhost:8000/api/docs`
+- Frontend: `http://localhost:3000`
 
 ## Project Structure
 
 ```
 .
-├── backend/
+├── backend/            # FastAPI Application
 │   ├── app/
 │   │   ├── api/            # API Layer
 │   │   │   ├── endpoints/  # Route Handlers (articles, auth, chat, health, news)
@@ -88,13 +80,18 @@ API Documentation: `http://localhost:8000/api/docs`
 │   │   │   └── vector_service.py
 │   │   └── main.py         # Application Entry Point
 │   └── tests/              # Test Suite
-├── db/                     # SQL Scripts & Schemas
-│   ├── functions/          # Database Functions
-│   ├── article.sql
-│   └── document_chunk.sql
-└── frontend/               # Frontend Application
+├── frontend/           # Next.js Application
+│   └── src/
+│       ├── app/        # App Router Pages
+│       ├── components/ # React Components
+│       ├── lib/        # Utils & API
+│       └── stores/     # State Management
+└── db/                 # SQL Schemas
+    ├── functions/          # Database Functions
+    ├── article.sql
+    └── document_chunk.sql
 ```
 
-## Development Status
+## Status
 
-Currently in MVP development stage. For detailed planning, please refer to [PRD.md](./PRD.md) and [TODO.md](./TODO.md).
+MVP Stage. See [PRD.md](./PRD.md) & [TODO.md](./TODO.md).

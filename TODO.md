@@ -110,21 +110,31 @@
 #### 12/27/2025
 - 增加 endpoint for article_id
 
+#### 01/01/2026
+- update README.md
+
+
 TODO:
+- 用户收藏、稍后再看功能实现
+  - 更改数据库表结构
+  - 后端非登录情况鉴权
+  - 前端登录
+  - 前端更改：增加用户界面
+- 储存用户对话
 - 前端
-  - 增加文章详情页
-  - 修改chat展示逻辑
-- 解决幻觉问题
+  - 增加文章详情页:按照md格式展示网页全部翻译内容
+  - 修改chat展示逻辑：chat时不会仍然能访问左侧主要内容
 - chat recommendation
 - RAG chat recommendation
 - 前端
-- RAG 引入Hybrid Search
+- RAG 引入Hybrid Search 尝试解决幻觉问题
   - RRF方案得到结果
   - 分词以及关键词索引
+  - 解决幻觉问题：
+    - RAG增加keyword search: BM25
 - 第三方登录（github, google）
 - 提取模型及各种参数于config，env
 - 研究AI翻译总结的高性能prompt（prompt training）
-- 用户收藏实现
 - 评论
 - 扫描更新文章
 - Agent: 实现对于文章的深度调研
