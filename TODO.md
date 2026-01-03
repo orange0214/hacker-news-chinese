@@ -114,7 +114,8 @@
 - update README.md
 
 #### 02/01/2025
-- 
+- 修改article数据库表结构并在代码中进行相应的更改
+- 增加 repository: favorite & read_later
 
 
 TODO:
