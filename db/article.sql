@@ -26,6 +26,8 @@ create table public.articles (
   image_urls text[],                      -- Array of image URLs from the article
 
   is_embedded boolean,
+
+  favorites_count integer,
   
   detailed_analysis jsonb,                -- Structured analysis (JSON)
   comment_analysis jsonb,                 -- Comment analysis (JSON)

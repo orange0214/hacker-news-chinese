@@ -49,6 +49,8 @@ class Article(BaseModel):
 
     is_embedded: bool = Field(default=False, description="Article has been vectorized")
 
+    favorites_count: Optional[int] = Field(default=0, description="number of favorites")
+
     detailed_analysis: Optional[AITranslatedResult]
     comment_analysis: Optional[List[CommentAnalysis]]
     

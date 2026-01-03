@@ -37,6 +37,8 @@ class ArticleSchema(BaseModel):
     # Statistics
     descendants: Optional[int] = Field(default=None, description="In the case of stories or polls, the total comment count")
 
+    favorites_count: int = Field(description="number of favorites")
+
     # Status
     deleted: Optional[bool] = Field(default=False, description="true if the item is deleted")
     dead: Optional[bool] = Field(default=False, description="true if the item is dead")
