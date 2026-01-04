@@ -68,3 +68,5 @@ class InteractionService:
             "is_favorited": interaction_repository.check_is_favorite(user_id, article_id),
             "is_read_later": interaction_repository.check_is_read_later(user_id, article_id)
         }
+
+interaction_service = InteractionService()

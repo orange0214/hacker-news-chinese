@@ -9,6 +9,7 @@ from app.api.endpoints.auth import router as auth_router
 from app.api.endpoints.news import router as news_router
 from app.api.endpoints.articles import router as articles_router
 from app.api.endpoints.chat import router as chat_router
+from app.api.endpoints.interactions import router as interactions_router
 
 api_router = APIRouter(prefix="/api")
 
@@ -26,3 +27,6 @@ api_router.include_router(articles_router)
 
 # Chat endpoints
 api_router.include_router(chat_router)
+
+# Interactions endpoints
+api_router.include_router(interactions_router)

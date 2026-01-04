@@ -6,7 +6,7 @@ from app.schemas.article import ArticleSchema
 router = APIRouter(prefix="/articles", tags=["articles"])
 
 @router.get("/", response_model=ArticleListResponse)
-async def list_articles(
+def list_articles(
     params: ArticleFilterParams = Depends()
 ):
     try:
@@ -16,9 +16,9 @@ async def list_articles(
 
 
 @router.get("/{article_id}", response_model=ArticleSchema)
-async def get_article(article_id: int):
+def get_article(article_id: int):
     try:
-        return await article_service.get_article_detail(article_id)
+        return article_service.get_article_detail(article_id)
     except HTTPException as he:
         raise he
     except Exception as e:

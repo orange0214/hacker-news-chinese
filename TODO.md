@@ -120,6 +120,12 @@
 #### 01/03/2025
 - 初始化service层
 
+#### 01/04/2025
+- 完成 interaction service 层
+- 
+
+
+
 TODO:
 - 修改 ArticleSchema
 - 用户收藏、稍后再看功能实现
