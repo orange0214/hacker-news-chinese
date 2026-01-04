@@ -113,10 +113,12 @@
 #### 01/01/2026
 - update README.md
 
-#### 02/01/2025
+#### 01/02/2025
 - 修改article数据库表结构并在代码中进行相应的更改
 - 增加 repository: favorite & read_later
 
+#### 01/03/2025
+- 初始化service层
 
 TODO:
 - 修改 ArticleSchema
