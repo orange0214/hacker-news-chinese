@@ -122,7 +122,7 @@
 
 #### 01/04/2025
 - 完成 interaction service 层
-- 
+- 将部分函数的异步更改为同步
 
 
 
@@ -138,6 +138,7 @@ TODO:
   - 修改chat展示逻辑：chat时不会仍然能访问左侧主要内容
 - chat recommendation
 - RAG chat recommendation
+- 纯异步重构：将supabase改为纯异步操作
 - 前端
 - RAG 引入Hybrid Search 尝试解决幻觉问题
   - RRF方案得到结果

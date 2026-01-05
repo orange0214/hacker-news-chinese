@@ -51,7 +51,7 @@ class ChatService:
 
     
     async def stream_chat(self, article_id: int, message: str, history: List[ChatMessage]) -> AsyncGenerator[str, None]:
-        article_data = await article_service.get_article_context(article_id)
+        article_data = article_service.get_article_context(article_id)
 
         chain = prompt_template | llm | StrOutputParser()
 
