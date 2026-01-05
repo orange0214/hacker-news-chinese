@@ -39,6 +39,9 @@ class ArticleSchema(BaseModel):
 
     favorites_count: int = Field(description="number of favorites")
 
+    is_favorited: bool = Field(default=False, description="true if the article is favorited by the user")
+    is_read_later: bool = Field(default=False, description="true if the article is read later by the user")
+
     # Status
     deleted: Optional[bool] = Field(default=False, description="true if the item is deleted")
     dead: Optional[bool] = Field(default=False, description="true if the item is dead")

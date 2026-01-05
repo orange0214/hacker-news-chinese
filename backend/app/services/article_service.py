@@ -1,8 +1,9 @@
 import math
 from fastapi import HTTPException
-from typing import List
+from typing import Optional
 from app.repositories.article_repository import article_repository
 from app.schemas.article import ArticleFilterParams, ArticleSchema, ArticleListResponse
+from app.services.interaction_service import interaction_service
 
 class ArticleService:
     def get_article_list(self, params: ArticleFilterParams) -> ArticleListResponse:
@@ -27,12 +28,21 @@ class ArticleService:
             total_pages=total_pages,
         )
 
-    def get_article_detail(self, article_id: int) -> ArticleSchema:
+    def get_article_detail(self, article_id: int, user_id: Optional[str] = None) -> ArticleSchema:
         article = article_repository.get_article_by_id(article_id)
         if not article:
             raise HTTPException(status_code=404, detail="Article not found")
+
+        article_data = article.model_dump()
+
+        article_data["is_favorited"] = False
+        article_data["is_read_later"] = False
+
+        if user_id:
+            status = interaction_service.get_interaction_status(user_id, article_id)
+            article_data.update(status)
         
-        return ArticleSchema.model_validate(article)
+        return ArticleSchema.model_validate(article_data)
     
     def get_article_context(self, article_id: int) -> dict:
         # get article context from database

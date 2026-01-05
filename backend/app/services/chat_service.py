@@ -10,6 +10,7 @@ from app.core.logger import logger
 from app.services.article_service import article_service
 from app.services.vector_service import vector_service
 from app.schemas.chat import ChatMessage
+import asyncio
 
 
 llm = ChatGoogleGenerativeAI(
@@ -51,7 +52,7 @@ class ChatService:
 
     
     async def stream_chat(self, article_id: int, message: str, history: List[ChatMessage]) -> AsyncGenerator[str, None]:
-        article_data = article_service.get_article_context(article_id)
+        article_data = await asyncio.to_thread(article_service.get_article_context, article_id)
 
         chain = prompt_template | llm | StrOutputParser()
 

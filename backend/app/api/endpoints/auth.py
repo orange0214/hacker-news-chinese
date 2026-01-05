@@ -38,5 +38,5 @@ def login(body: LoginBody):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Authentication failed: {str(e)}")
 
 @router.get("/me")
-def read_current_user(current_user: dict = Depends(get_current_user)):
+def read_current_user(current_user = Depends(get_current_user)):
     return current_user.model_dump()
