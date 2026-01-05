@@ -127,16 +127,27 @@
 - 修改 article service, 当用户获得当前article detail时会查询是否与文章有interactions
 - debug 在 article router中加入 security depends
 
-
+#### 01/05/2025
+- 设计对话持久化方案 (Multi-session Chat Persistence)
+  - DB: 设计 `conversations` (会话) 和 `messages` (消息) 表结构，支持一对多会话管理。
+  - Logic: 
+    - 区分“开启新对话” (conversation_id=null) 与 “继续对话” (conversation_id=uuid)。
+    - 实现流式响应拦截，自动保存 User Message 和 Assistant Response。
+  - API: 规划 Session List 获取、新建/继续对话、历史消息回溯接口。
 
 
 TODO:
-- 储存用户对话
+- [P0] 储存用户对话 (Chat Persistence)
+  - [ ] DB Migration: Create `conversations` & `messages` tables
+  - [ ] Repo: Implement `ChatRepository` (create_session, add_message, get_history)
+  - [ ] Service: Update `ChatService` to handle session logic & stream persistence
+  - [ ] API: Update endpoints (`POST /chat`) & Add `GET /chat/sessions`
 - 前端
   - 增加文章详情页:按照md格式展示网页全部翻译内容
   - 修改chat展示逻辑：chat时不会仍然能访问左侧主要内容
   - 增加用户界面
   - 文章收藏，稍后再看
+  - [ ] 对话侧边栏/历史记录 UI 集成
 - chat recommendation
 - RAG chat recommendation
 - 纯异步重构：将supabase改为纯异步操作
