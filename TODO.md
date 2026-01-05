@@ -123,19 +123,20 @@
 #### 01/04/2025
 - 完成 interaction service 层
 - 将部分函数的异步更改为同步
+- 用户收藏、稍后再看功能实现
+- 修改 article service, 当用户获得当前article detail时会查询是否与文章有interactions
+- debug 在 article router中加入 security depends
+
 
 
 
 TODO:
-- 修改 ArticleSchema
-- 用户收藏、稍后再看功能实现
-  - 更改数据库表结构
-  - 前端登录
-  - 前端更改：增加用户界面
 - 储存用户对话
 - 前端
   - 增加文章详情页:按照md格式展示网页全部翻译内容
   - 修改chat展示逻辑：chat时不会仍然能访问左侧主要内容
+  - 增加用户界面
+  - 文章收藏，稍后再看
 - chat recommendation
 - RAG chat recommendation
 - 纯异步重构：将supabase改为纯异步操作
