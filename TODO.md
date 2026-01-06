@@ -130,6 +130,7 @@
 #### 01/05/2025
 - 设计对话持久化方案 (Multi-session Chat Persistence)
   - DB: 设计 `conversations` (会话) 和 `messages` (消息) 表结构，支持一对多会话管理。
+  - 实现chat_repository.py
   - Logic: 
     - 区分“开启新对话” (conversation_id=null) 与 “继续对话” (conversation_id=uuid)。
     - 实现流式响应拦截，自动保存 User Message 和 Assistant Response。
