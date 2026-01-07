@@ -133,6 +133,7 @@
   - 实现chat_repository.py
 
 #### 01/06/2025
+- 增加redis
 - 
 
 TODO:

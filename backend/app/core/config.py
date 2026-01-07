@@ -14,6 +14,7 @@ class Settings(BaseSettings):
 
     # redis
     redis_url: str
+    redis_cache_expire_seconds: int
 
     # Hacker News API endpoints (top/new up to 500 stories, best stories list)
     hn_top_url: str = "https://hacker-news.firebaseio.com/v0/topstories.json"
