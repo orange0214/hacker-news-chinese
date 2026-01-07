@@ -31,6 +31,10 @@
 
 ### 1. Backend Setup
 ```bash
+# 1. Start Redis (Required for Chat Caching)
+docker run -d --name hn-redis -p 6379:6379 -v hn_redis_data:/data redis:alpine redis-server --appendonly yes
+
+# 2. Setup Python Environment
 cd backend
 uv sync
 # Configure environment variables in .env

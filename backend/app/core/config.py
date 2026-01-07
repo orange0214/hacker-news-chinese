@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     supabase_url: str
     supabase_api_key: str
 
+    # redis
+    redis_url: str
+
     # Hacker News API endpoints (top/new up to 500 stories, best stories list)
     hn_top_url: str = "https://hacker-news.firebaseio.com/v0/topstories.json"
     hn_new_url: str = "https://hacker-news.firebaseio.com/v0/newstories.json"
