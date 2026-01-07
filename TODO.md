@@ -134,7 +134,9 @@
 
 #### 01/06/2025
 - 增加redis
-- 
+- 将redis逻辑加入 chat_repository.py
+
+
 
 TODO:
 - [P0] 储存用户对话 (Chat Persistence)
