@@ -19,7 +19,7 @@
 ## Tech Stack
 
 - **Backend**: FastAPI (Python 3.12+)
-- **Database**: Supabase (PostgreSQL + pgvector)
+- **Database**: Supabase (PostgreSQL + pgvector), Redis
 - **AI/Tools**: Gemini, Jina Reader, uv, Loguru, APScheduler
 
 ### Frontend
