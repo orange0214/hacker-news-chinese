@@ -8,9 +8,9 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     article_id: int = Field(description="id of the article")
     message: str = Field(description="message from user")
-    history: List[ChatMessage] = Field(
-        default=[],
-        description="history of the conversation"
+    conversation_id: Optional[str] = Field(
+        default=None,
+        description="id of the conversation, if None, a new conversation will be created"
     )
 
     class Config:
@@ -19,19 +19,16 @@ class ChatRequest(BaseModel):
                 {
                     "article_id": 1,
                     "message": "What is the main idea of the article?",
-                    "history": [
-                        {"role": "user", "content": "Hello"},
-                        {"role": "assistant", "content": "Hello, how can I help you today?"},
-                    ]
+                    "conversation_id": "123e4567-e89b-12d3-a456-426614174000"
                 }
             ]
         }
 
 class GlobalChatRequest(BaseModel):
     message: str = Field(description="message from user")
-    history: List[ChatMessage] = Field(
-        default=[],
-        description="history of the conversation"
+    conversation_id: Optional[str] = Field(
+        default=None,
+        description="id of the conversation, if None, a new conversation will be created"
     )
 
     class Config:
@@ -39,10 +36,7 @@ class GlobalChatRequest(BaseModel):
             "examples": [
                 {
                     "message": "What are the latest articles about Rust?",
-                    "history": [
-                        {"role": "user", "content": "Hello"},
-                        {"role": "assistant", "content": "Hello, how can I help you today?"},
-                    ]
+                    "conversation_id": "123e4567-e89b-12d3-a456-426614174000"
                 }
             ]
         }
