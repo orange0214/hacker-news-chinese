@@ -142,6 +142,7 @@
 - 修改 chat_service 将对话内容存入数据库
 - 修改 endpoint/chat
 - 在 schema 中增加 ConversationSchema 和 ConversationMessageSchema
+- 更新 PRD 文档，明确 SSE 协议细节
 
 
 
@@ -149,6 +150,7 @@ TODO:
 - 前端
   - 增加文章详情页:按照md格式展示网页全部翻译内容
   - 修改chat展示逻辑：chat时不会仍然能访问左侧主要内容
+  - 修改chat逻辑：使用SSE协议进行传输
   - 增加用户界面
   - 文章收藏，稍后再看
   - [ ] 对话侧边栏/历史记录 UI 集成

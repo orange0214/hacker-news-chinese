@@ -46,8 +46,8 @@ Hacker News (HN) 是全球高质量技术信息的聚集地，但存在两个主
 | B4 | **LLM 处理管道** | 将以下三部分信息组合作为 LLM 的输入上下文：<br>1. **Title**: 原文标题。<br>2. **Text**: HN 帖子原本的文本（HTML转纯文本）。<br>3. **Scraped Content**: 从 URL 抓取的外部网页正文。<br><br>LLM 需综合这些信息进行翻译、总结和分析。 | P0 |
 | B5 | **数据持久化** | 将原始元数据、爬取的正文、LLM 生成的结果存入 Supabase 数据库。需处理去重逻辑（基于 `hn_id`）。 | P0 |
 | B6 | **文章列表 API** | 提供 `GET /api/articles` 接口，支持分页，按时间或热度排序。 | P0 |
-| B7 | **单篇对话 API (流式)** | 提供 `POST /api/chat/message` 接口。<br>1. **新对话**: 传入 `article_id`，`conversation_id=null`。系统创建新会话并流式返回。<br>2. **继续对话**: 传入 `conversation_id`。系统加载历史上下文并追加新消息。 | P0 |
-| B8 | **全站 RAG 对话 API** | 提供 `POST /api/chat/global` 接口。基于 **LangChain** + **Vector Store** 实现。需异步对文章进行切分 (Chunking) 和向量化 (Embedding) 存入 `document_chunks` 表。检索时召回相关片段作为 Context。 | P1 |
+| B7 | **单篇对话 API (流式)** | 提供 `POST /api/chat/message` 接口。<br>使用 **SSE (Server-Sent Events)** 协议。<br>1. **新对话**: 传入 `article_id`，`conversation_id=null`。返回 `event: new_conversation` 携带新 ID。<br>2. **继续对话**: 传入 `conversation_id`。系统加载历史上下文并追加新消息。<br>3. **流式输出**: `data: chunk` 实时返回 AI 内容。 | P0 |
+| B8 | **全站 RAG 对话 API** | 提供 `POST /api/chat/global` 接口。基于 **LangChain** + **Vector Store** 实现。<br>同样使用 **SSE** 协议流式返回。需异步对文章进行切分 (Chunking) 和向量化 (Embedding) 存入 `document_chunks` 表。检索时召回相关片段作为 Context。 | P1 |
 | B9 | **对话历史 API** | 1. `GET /api/chat/sessions`: 获取当前用户在某文章下的会话列表。<br>2. `GET /api/chat/sessions/{id}/messages`: 获取指定会话的完整消息记录。 | P0 |
 
 ### 3.2 前端界面--暂定 (Frontend - React)
@@ -57,7 +57,7 @@ Hacker News (HN) 是全球高质量技术信息的聚集地，但存在两个主
 | F1 | **首页信息流** | 卡片式布局，展示：中文标题、一句话摘要、HN 分数、发布时间、原文链接。 | P0 |
 | F2 | **文章详情页** | 展示 AI 生成的完整报告（使用 Markdown 渲染）。包括：背景、核心要点列表、潜在影响等。 | P0 |
 | F3 | **加载状态** | 在数据加载或 AI 回复时展示 Skeleton Screen 或 Loading Spinner。 | P1 |
-| F4 | **单篇对话组件** | 类似 ChatGPT 的聊天界面，集成在详情页中。支持用户输入、发送、接收流式打字机效果的回复。<br>**新增**: 左侧/顶部会话列表切换功能。 | P0 |
+| F4 | **单篇对话组件** | 类似 ChatGPT 的聊天界面，集成在详情页中。支持用户输入、发送、接收流式打字机效果的回复（需适配 **SSE** 事件流）。<br>**新增**: 左侧/顶部会话列表切换功能。 | P0 |
 | F5 | **全局对话浮窗** | 在首页右下角或侧边栏提供全局对话入口，支持针对全站内容的自由提问（Global RAG）。 | P1 |
 
 ### 3.3 AI 提示词策略 (Prompt Strategy)
