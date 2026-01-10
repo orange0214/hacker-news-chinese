@@ -1,9 +1,19 @@
 from typing import List, Optional
+from datetime import datetime
 from pydantic import BaseModel, Field
 
 class ChatMessage(BaseModel):
     role: str = Field(description="role of the message, user or assistant")
     content: str = Field(description="content of the message")
+
+class ConversationSchema(BaseModel):
+    id: str
+    title: Optional[str]
+    article_id: Optional[int]
+    updated_at: datetime
+
+class ConversationMessageSchema(ConversationSchema):
+    messages: List[ChatMessage]
 
 class ChatRequest(BaseModel):
     article_id: int = Field(description="id of the article")

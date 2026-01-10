@@ -3,13 +3,14 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
-from typing import List, AsyncGenerator
+from typing import List, AsyncGenerator, Optional, Dict
 from app.core.config import settings
 from app.core.prompts import Prompts
 from app.core.logger import logger
 from app.services.article_service import article_service
 from app.services.vector_service import vector_service
-from app.schemas.chat import ChatMessage
+from app.repositories.chat_repository import chat_repository
+from app.schemas.chat import ChatMessage, ConversationSchema, ConversationMessageSchema
 import asyncio
 
 
@@ -51,13 +52,23 @@ class ChatService:
         return lc_history
 
     
-    async def stream_chat(self, article_id: int, message: str, history: List[ChatMessage]) -> AsyncGenerator[str, None]:
-        article_data = await asyncio.to_thread(article_service.get_article_context, article_id)
+    async def stream_chat(self, user_id: str, article_id: int, message: str, conversation_id: Optional[str] = None) -> AsyncGenerator[str, None]:
+        if not conversation_id:
+            conversation_id = await chat_repository.create_conversation(user_id, article_id, title="Chat with Article")
+            yield f"event: new_conversation\ndata: {conversation_id}\n\n"
+        
+        await chat_repository.add_message(conversation_id, "user", message)
+        await chat_repository.update_conversation_timestamp(conversation_id)
 
         chain = prompt_template | llm | StrOutputParser()
+        
+        raw_history_messages = await chat_repository.get_messages(conversation_id)
+        history_objs = [ChatMessage(role=msg["role"], content=msg["content"]) for msg in raw_history_messages]
+        lc_history = self._convert_history(history_objs)
 
-        lc_history = self._convert_history(history)
+        article_data = await asyncio.to_thread(article_service.get_article_context, article_id)
 
+        full_ai_response = ""
         async for chunk in chain.astream({
             "original_title": article_data["original_title"],
             "original_text": article_data["original_text"],
@@ -66,8 +77,15 @@ class ChatService:
             "history": lc_history,
             "message": message
         }):
-            yield chunk
-    
+            full_ai_response += chunk
+            clean_chunk = chunk.replace("\n", "\\n")
+            yield f"data: {clean_chunk}\n\n"
+        
+        if full_ai_response:
+            await chat_repository.add_message(conversation_id, "assistant", full_ai_response)
+        
+        yield "event: stop\ndata: [DONE]\n\n"
+
 
     async def _rewrite_query(self, message: str, history: List[ChatMessage]) -> str:
         lc_history = self._convert_history(history)
@@ -80,6 +98,7 @@ class ChatService:
         })
 
         return rewritten_query.strip()
+
 
     def _build_rag_context(self, search_results: List[dict]) -> str:
         if not search_results:
@@ -97,23 +116,57 @@ class ChatService:
         
         return "\n".join(context_parts)
 
-    async def stream_global_chat(self, message: str, history) -> AsyncGenerator[str, None]:
-        search_query = await self._rewrite_query(message, history)
+
+    async def stream_global_chat(self, user_id: str, message: str, conversation_id: Optional[str] = None) -> AsyncGenerator[str, None]:
+        if not conversation_id:
+            conversation_id = await chat_repository.create_conversation(user_id, article_id=None, title="Global Chat")
+            yield f"event: new_conversation\ndata: {conversation_id}\n\n"
+
+        await chat_repository.add_message(conversation_id, "user", message)
+        await chat_repository.update_conversation_timestamp(conversation_id)
+
+        raw_history_messages = await chat_repository.get_messages(conversation_id)
+        history_objs = [ChatMessage(role=msg["role"], content=msg["content"]) for msg in raw_history_messages]
+
+        search_query = await self._rewrite_query(message, history_objs)
         # TODO: use a logger file to store all info
         logger.info(f"[GlobalChat] Original: {message} -> Rewritten: {search_query}")
         # limit can be edited in the frontend
         search_results = await vector_service.search_similar(search_query, limit = 5)
-
         context_str = self._build_rag_context(search_results)
 
         chain = global_chat_prompt_template | llm | StrOutputParser()
-        lc_history = self._convert_history(history)
+        lc_history = self._convert_history(history_objs)
 
+        full_ai_response = ""
         async for chunk in chain.astream({
             "context": context_str,
             "history": lc_history,
             "message": message
         }):
-            yield chunk
+            full_ai_response += chunk
+            clean_chunk = chunk.replace("\n", "\\n")
+            yield f"data: {clean_chunk}\n\n"
+        
+        if full_ai_response:
+            await chat_repository.add_message(conversation_id, "assistant", full_ai_response)
+        
+        yield "event: stop\ndata: [DONE]\n\n"
+
+    async def get_user_conversations(self, user_id: str, article_id: Optional[int] = None, skip: int = 0, limit: int = 20) -> List[ConversationSchema]:
+        data = await chat_repository.get_user_conversations(user_id, article_id, skip, limit)
+        return [ConversationSchema.model_validate(item) for item in data]
+    
+    async def get_conversation_messages_by_id(self, user_id: str, conversation_id: str) -> Optional[ConversationMessageSchema]:
+        conversation = await chat_repository.get_conversation_by_id(conversation_id, user_id)
+        if not conversation:
+            return None
+        messages = await chat_repository.get_messages(conversation_id)
+        msg_objs = [ChatMessage.model_validate(msg) for msg in messages]
+        
+        return ConversationMessageSchema(
+            **conversation,
+            messages=msg_objs
+        )
 
 chat_service = ChatService()

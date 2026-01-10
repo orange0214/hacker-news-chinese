@@ -161,3 +161,5 @@ class ChatRepository:
         except Exception as e:
             logger.error(f"Error fetching messages: {e}")
             return []
+
+chat_repository = ChatRepository()

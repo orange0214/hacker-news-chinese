@@ -135,14 +135,18 @@
 #### 01/06/2025
 - 增加redis
 - 将redis逻辑加入 chat_repository.py
+- 将repository内部分进行异步重构
+
+#### 01/09/2025
+- 增加SSE协议：event, data作为llm chat传输信号
+- 修改 chat_service 将对话内容存入数据库
+- 修改 endpoint/chat
+- 
 
 
 
 TODO:
 - [P0] 储存用户对话 (Chat Persistence)
-  - [ ] DB Migration: Create `conversations` & `messages` tables
-  - [ ] Repo: Implement `ChatRepository` (create_session, add_message, get_history)
-  - [ ] Service: Update `ChatService` to handle session logic & stream persistence
   - [ ] API: Update endpoints (`POST /chat`) & Add `GET /chat/sessions`
 - 前端
   - 增加文章详情页:按照md格式展示网页全部翻译内容
@@ -150,6 +154,7 @@ TODO:
   - 增加用户界面
   - 文章收藏，稍后再看
   - [ ] 对话侧边栏/历史记录 UI 集成
+- 异步更新conversation title
 - chat recommendation
 - RAG chat recommendation
 - 纯异步重构：将supabase改为纯异步操作
