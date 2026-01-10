@@ -55,6 +55,10 @@ class ChatService:
     async def stream_chat(self, user_id: str, article_id: int, message: str, conversation_id: Optional[str] = None) -> AsyncGenerator[str, None]:
         if not conversation_id:
             conversation_id = await chat_repository.create_conversation(user_id, article_id, title="Chat with Article")
+            if not conversation_id:
+                logger.error("Failed to create conversation")
+                yield f"event: error\ndata: Failed to create conversation\n\n"
+                return
             yield f"event: new_conversation\ndata: {conversation_id}\n\n"
         
         await chat_repository.add_message(conversation_id, "user", message)
@@ -120,6 +124,10 @@ class ChatService:
     async def stream_global_chat(self, user_id: str, message: str, conversation_id: Optional[str] = None) -> AsyncGenerator[str, None]:
         if not conversation_id:
             conversation_id = await chat_repository.create_conversation(user_id, article_id=None, title="Global Chat")
+            if not conversation_id:
+                logger.error("Failed to create global conversation")
+                yield f"event: error\ndata: Failed to create conversation\n\n"
+                return
             yield f"event: new_conversation\ndata: {conversation_id}\n\n"
 
         await chat_repository.add_message(conversation_id, "user", message)
