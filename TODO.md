@@ -141,13 +141,11 @@
 - 增加SSE协议：event, data作为llm chat传输信号
 - 修改 chat_service 将对话内容存入数据库
 - 修改 endpoint/chat
-- 
+- 在 schema 中增加 ConversationSchema 和 ConversationMessageSchema
 
 
 
 TODO:
-- [P0] 储存用户对话 (Chat Persistence)
-  - [ ] API: Update endpoints (`POST /chat`) & Add `GET /chat/sessions`
 - 前端
   - 增加文章详情页:按照md格式展示网页全部翻译内容
   - 修改chat展示逻辑：chat时不会仍然能访问左侧主要内容
