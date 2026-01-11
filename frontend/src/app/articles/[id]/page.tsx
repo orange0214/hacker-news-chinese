@@ -168,6 +168,34 @@ export default function ArticleDetailPage() {
                                 </p>
                             </div>
                         </section>
+
+                        {/* Full Translated Content */}
+                        {article.detailed_analysis.url_content_trans && (
+                            <section className="prose prose-invert prose-lg max-w-none pt-4">
+                                <hr className="border-border/40 mb-8" />
+                                <h3 className="text-xl font-semibold mb-6 text-primary flex items-center gap-2">
+                                    <span className="bg-primary/20 w-8 h-8 rounded-lg flex items-center justify-center text-sm">文</span>
+                                    Full Translated Content
+                                </h3>
+                                <div className="bg-muted/10 p-6 md:p-8 rounded-3xl border border-border/30">
+                                    <ReactMarkdown
+                                        components={{
+                                            h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mb-4 mt-6 text-foreground" {...props} />,
+                                            h2: ({ node, ...props }) => <h2 className="text-xl font-bold mb-3 mt-5 text-foreground" {...props} />,
+                                            h3: ({ node, ...props }) => <h3 className="text-lg font-bold mb-2 mt-4 text-foreground/90" {...props} />,
+                                            p: ({ node, ...props }) => <p className="leading-relaxed mb-4 text-muted-foreground" {...props} />,
+                                            ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-2" {...props} />,
+                                            ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-2" {...props} />,
+                                            li: ({ node, ...props }) => <li className="text-muted-foreground" {...props} />,
+                                            code: ({ node, ...props }) => <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary" {...props} />,
+                                            blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-primary/30 pl-4 italic text-muted-foreground my-4" {...props} />,
+                                        }}
+                                    >
+                                        {article.detailed_analysis.url_content_trans}
+                                    </ReactMarkdown>
+                                </div>
+                            </section>
+                        )}
                     </div>
                 ) : (
                     <div className="py-20 text-center text-muted-foreground">
