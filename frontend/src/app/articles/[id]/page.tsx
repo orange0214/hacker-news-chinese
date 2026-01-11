@@ -176,10 +176,9 @@ export default function ArticleDetailPage() {
 
                 {/* Header Section */}
                 <section className="space-y-4">
-                    <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary" className="text-orange-600 bg-orange-400/10 hover:bg-orange-400/20">
-                            <ThumbsUpIcon className="w-3 h-3 mr-1" />
-                            {article.score} Points
+                    <div className="flex flex-wrap gap-2 items-center">
+                        <Badge variant="outline" className="text-muted-foreground border-muted-foreground/30">
+                            HN Score: {article.score}
                         </Badge>
                         {article.detailed_analysis && (
                             <Badge variant="outline" className="text-blue-400 border-blue-500/30">

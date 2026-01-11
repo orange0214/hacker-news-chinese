@@ -111,19 +111,16 @@ export function ArticleCard({ article }: ArticleCardProps) {
                         </div>
                     </CardTitle>
                     <div className="flex items-center gap-2 shrink-0">
-                        <Badge variant="secondary" className="flex gap-1 items-center px-1.5 h-7">
-                            <ThumbsUpIcon className="w-3.5 h-3.5 text-orange-500" />
-                            <span className="text-sm font-medium">{article.score}</span>
-                        </Badge>
-
                         <Button
                             variant="ghost"
                             size="icon"
                             className={`h-7 w-7 ${isFavorited ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'}`}
-                            onClick={() => toggleFavoriteMutation.mutate()}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                toggleFavoriteMutation.mutate();
+                            }}
                         >
                             <HeartIcon className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
-                            {/* Small count next to heart if needed, but badge is separate now. The badge shows GLOBAL count. */}
                         </Button>
                         {favoritesCount > 0 && (
                             <span className="text-xs text-muted-foreground font-mono">{favoritesCount}</span>
@@ -133,7 +130,10 @@ export function ArticleCard({ article }: ArticleCardProps) {
                             variant="ghost"
                             size="icon"
                             className={`h-7 w-7 ${isReadLater ? 'text-primary hover:text-primary' : 'text-muted-foreground hover:text-primary'}`}
-                            onClick={() => toggleReadLaterMutation.mutate()}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                toggleReadLaterMutation.mutate();
+                            }}
                         >
                             <BookmarkIcon className={`w-4 h-4 ${isReadLater ? 'fill-current' : ''}`} />
                         </Button>
@@ -145,11 +145,17 @@ export function ArticleCard({ article }: ArticleCardProps) {
                         {formattedDate}
                     </span>
                     <span>by {article.by}</span>
-                    {article.detailed_analysis && (
-                        <Badge variant="outline" className="text-[10px] py-0 h-5 border-blue-500/30 text-blue-400">
-                            AI Score: {article.detailed_analysis.ai_score}
+
+                    <div className="flex gap-2 ml-auto">
+                        <Badge variant="outline" className="text-[10px] py-0 h-5 border-muted-foreground/30 text-muted-foreground font-normal">
+                            HN Score: {article.score}
                         </Badge>
-                    )}
+                        {article.detailed_analysis && (
+                            <Badge variant="outline" className="text-[10px] py-0 h-5 border-blue-500/30 text-blue-400">
+                                AI Score: {article.detailed_analysis.ai_score}
+                            </Badge>
+                        )}
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="flex-grow text-sm text-muted-foreground">
