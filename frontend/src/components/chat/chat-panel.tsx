@@ -13,12 +13,22 @@ import { useState, useEffect, useRef } from "react";
 import { LoginForm } from "./login-form";
 import { useAuthStore } from "@/stores/auth";
 
+import { usePathname } from "next/navigation";
+
 export function ChatPanel() {
     const { isOpen, closeChat, mode, articleId, articleTitle } = useChatStore();
     const { messages, isLoading, sendMessage, resetChat } = useChatStream();
     const [input, setInput] = useState("");
     const scrollRef = useRef<HTMLDivElement>(null);
     const token = useAuthStore((state) => state.token);
+    const pathname = usePathname();
+
+    // Auto-close chat on navigation (route change)
+    useEffect(() => {
+        if (isOpen) {
+            closeChat();
+        }
+    }, [pathname]);
 
     // Reset chat when opening a new session
     useEffect(() => {
@@ -42,8 +52,12 @@ export function ChatPanel() {
     };
 
     return (
-        <Sheet open={isOpen} onOpenChange={(open) => !open && closeChat()}>
-            <SheetContent className="w-[400px] sm:w-[540px] flex flex-col p-0 border-l border-border/40 bg-background/95 backdrop-blur-3xl" side="right">
+        <Sheet open={isOpen} onOpenChange={(open) => !open && closeChat()} modal={false}>
+            <SheetContent
+                className="w-[400px] sm:w-[540px] flex flex-col p-0 border-l border-border/40 bg-background/95 backdrop-blur-3xl shadow-2xl"
+                side="right"
+                disableOverlay={true}
+            >
                 <SheetHeader className="p-4 border-b border-border/40">
                     <SheetTitle className="flex items-center gap-2">
                         <Sparkles className="w-5 h-5 text-indigo-400" />
