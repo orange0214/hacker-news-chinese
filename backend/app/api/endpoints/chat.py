@@ -13,7 +13,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 async def chat(request: ChatRequest, current_user = Security(get_current_user)):
     return StreamingResponse(
         chat_service.stream_chat(
-            current_user["id"],
+            current_user.id,
             request.article_id, 
             request.message, 
             request.conversation_id
@@ -25,7 +25,7 @@ async def chat(request: ChatRequest, current_user = Security(get_current_user)):
 async def global_chat(request: GlobalChatRequest, current_user = Security(get_current_user)):
     return StreamingResponse(
         chat_service.stream_global_chat(
-            current_user["id"],
+            current_user.id,
             request.message,
             request.conversation_id
         ),
@@ -39,14 +39,14 @@ async def get_sessions(
     article_id: Optional[int] = None,
     current_user = Security(get_current_user)
 ):
-    return await chat_service.get_user_conversations(current_user["id"], article_id, skip, limit)
+    return await chat_service.get_user_conversations(current_user.id, article_id, skip, limit)
 
 @router.get("/sessions/{conversation_id}", response_model=ConversationMessageSchema)
 async def get_session_detail(
     conversation_id: str,
     current_user = Security(get_current_user)
 ):
-    result = await chat_service.get_conversation_messages_by_id(current_user["id"], conversation_id)
+    result = await chat_service.get_conversation_messages_by_id(current_user.id, conversation_id)
     if not result:
         raise HTTPException(status_code=404, detail="Conversation not found")
     return result

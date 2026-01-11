@@ -144,6 +144,11 @@
 - 在 schema 中增加 ConversationSchema 和 ConversationMessageSchema
 - 更新 PRD 文档，明确 SSE 协议细节
 
+#### 01/10/2026
+- debug in chat_repository.py
+- 修改前端chat SSE协议
+- 
+
 
 
 TODO:

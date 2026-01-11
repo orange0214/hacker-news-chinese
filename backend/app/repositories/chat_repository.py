@@ -28,7 +28,6 @@ class ChatRepository:
 
             query = self.supabase.table(self.conversation_table)\
                 .insert(payload)\
-                .select("id")\
                 .single()
 
             result = await asyncio.to_thread(query.execute())
