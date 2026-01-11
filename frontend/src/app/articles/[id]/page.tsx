@@ -133,9 +133,9 @@ export default function ArticleDetailPage() {
     });
 
     return (
-        <div className="min-h-screen bg-background text-foreground pb-20">
+        <div className="min-h-screen bg-background text-foreground pb-20 overflow-x-hidden">
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container mx-auto px-4 h-16 flex items-center gap-4">
+                <div className="w-full lg:w-3/4 mx-auto px-4 h-16 flex items-center gap-4">
                     <Button variant="ghost" size="icon" onClick={() => router.back()}>
                         <ArrowLeftIcon className="w-5 h-5" />
                     </Button>
@@ -178,7 +178,7 @@ export default function ArticleDetailPage() {
                 </div>
             </header>
 
-            <main className="container mx-auto px-4 py-8 space-y-8">
+            <main className="w-full lg:w-3/4 mx-auto px-4 py-8 space-y-8">
 
                 {/* Header Section */}
                 <section className="space-y-4">

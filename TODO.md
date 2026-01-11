@@ -148,15 +148,15 @@
 - debug in chat_repository.py
 - 修改前端chat SSE协议
 - 增加文章详情页:按照md格式展示网页全部翻译内容
-- 
+- 前端新增收藏，稍后再看按钮
+- 改变HN Score样式
+- 修改chat展示逻辑：chat时不会仍然能访问左侧主要内容
 
 
 
 TODO:
 - 前端
-  - 修改chat展示逻辑：chat时不会仍然能访问左侧主要内容
   - 增加用户界面
-  - 文章收藏，稍后再看
   - [ ] 对话侧边栏/历史记录 UI 集成
 - 异步更新conversation title
 - chat recommendation
