@@ -1,14 +1,16 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
-import { ArticleSchema, ArticleListResponse } from "@/types/api"; // Updated: import ArticleListResponse
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { ArticleSchema, ArticleListResponse } from "@/types/api";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeftIcon, CalendarIcon, ExternalLinkIcon, MessageSquareIcon, StarIcon } from "lucide-react";
+import { ArrowLeftIcon, CalendarIcon, ExternalLinkIcon, MessageSquareIcon, StarIcon, HeartIcon, ThumbsUpIcon, BookmarkIcon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useChatStore } from "@/stores/chat";
 import { useEffect, useState } from "react";
+import { useAuthStore } from "@/stores/auth";
+import { api } from "@/lib/api";
 
 export default function ArticleDetailPage() {
     const params = useParams();
@@ -16,40 +18,100 @@ export default function ArticleDetailPage() {
     const id = Number(params.id);
     const queryClient = useQueryClient();
     const { openChat } = useChatStore();
+    const token = useAuthStore((state) => state.token);
+
     const [article, setArticle] = useState<ArticleSchema | null>(null);
+
+    // Initial state setup from article when available
+    const [isFavorited, setIsFavorited] = useState(false);
+    const [favoritesCount, setFavoritesCount] = useState(0);
+    const [isReadLater, setIsReadLater] = useState(false);
+
+    useEffect(() => {
+        if (article) {
+            setIsFavorited(article.is_favorited || false);
+            setFavoritesCount(article.favorites_count || 0);
+            setIsReadLater(article.is_read_later || false);
+        }
+    }, [article]);
+
+    const toggleFavoriteMutation = useMutation({
+        mutationFn: async () => {
+            if (!token) throw new Error("Please sign in to favorite");
+            if (!article) return;
+            if (isFavorited) {
+                await api.removeFavorite(article.id, token);
+            } else {
+                await api.addFavorite(article.id, token);
+            }
+        },
+        onMutate: async () => {
+            const previousIsFavorited = isFavorited;
+            const previousCount = favoritesCount;
+            setIsFavorited(!previousIsFavorited);
+            setFavoritesCount(prev => previousIsFavorited ? prev - 1 : prev + 1);
+            return { previousIsFavorited, previousCount };
+        },
+        onError: (err, variables, context) => {
+            if (context) {
+                setIsFavorited(context.previousIsFavorited);
+                setFavoritesCount(context.previousCount);
+            }
+            console.error(err);
+            alert(err.message);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["articles"] });
+        }
+    });
+
+    const toggleReadLaterMutation = useMutation({
+        mutationFn: async () => {
+            if (!token) throw new Error("Please sign in to bookmark");
+            if (!article) return;
+            if (isReadLater) {
+                await api.removeReadLater(article.id, token);
+            } else {
+                await api.addReadLater(article.id, token);
+            }
+        },
+        onMutate: async () => {
+            const previousIsReadLater = isReadLater;
+            setIsReadLater(!previousIsReadLater);
+            return { previousIsReadLater };
+        },
+        onError: (err, variables, context) => {
+            if (context) setIsReadLater(context.previousIsReadLater);
+            console.error(err);
+            alert(err.message);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["articles"] });
+        }
+    });
 
     useEffect(() => {
         if (!id) return;
-
-        // Attempt to find article in existing cache
+        // ... cache logic unchanged ...
         const queries = queryClient.getQueryCache().findAll({ queryKey: ["articles"] });
-
         let foundArticle: ArticleSchema | undefined;
-
         for (const query of queries) {
-            const data = query.state.data as any; // We know the shape, but page structure varies
+            const data = query.state.data as any;
             if (data?.pages) {
-                // It's an infinite query
                 for (const page of data.pages) {
                     const found = (page as ArticleListResponse).items.find(item => item.id === id);
-                    if (found) {
-                        foundArticle = found;
-                        break;
-                    }
+                    if (found) { foundArticle = found; break; }
                 }
             } else if (data?.items) {
-                // Regular query (if we had one)
                 foundArticle = (data as ArticleListResponse).items.find(item => item.id === id);
             }
             if (foundArticle) break;
         }
-
-        if (foundArticle) {
-            setArticle(foundArticle);
-        }
+        if (foundArticle) { setArticle(foundArticle); }
     }, [id, queryClient]);
 
     if (!article) {
+        // ... not found logic unchanged ...
         return (
             <div className="container max-w-4xl mx-auto px-4 py-20 flex flex-col items-center justify-center text-center gap-4">
                 <h1 className="text-2xl font-bold">Article not found in cache</h1>
@@ -80,10 +142,29 @@ export default function ArticleDetailPage() {
                     <h1 className="text-lg font-bold truncate flex-1">
                         {article.detailed_analysis?.title_cn || article.original_title}
                     </h1>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`h-9 w-9 ${isFavorited ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'}`}
+                            onClick={() => toggleFavoriteMutation.mutate()}
+                        >
+                            <HeartIcon className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`h-9 w-9 ${isReadLater ? 'text-primary hover:text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                            onClick={() => toggleReadLaterMutation.mutate()}
+                        >
+                            <BookmarkIcon className={`w-5 h-5 ${isReadLater ? 'fill-current' : ''}`} />
+                        </Button>
+                    </div>
                     <Button
                         variant="outline"
                         size="sm"
                         onClick={() => openChat('article', article.id, article.original_title)}
+                        className="ml-2"
                     >
                         <MessageSquareIcon className="w-4 h-4 mr-2" />
                         Chat
@@ -96,13 +177,19 @@ export default function ArticleDetailPage() {
                 {/* Header Section */}
                 <section className="space-y-4">
                     <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary" className="text-yellow-600 bg-yellow-400/10 hover:bg-yellow-400/20">
-                            <StarIcon className="w-3 h-3 mr-1" />
+                        <Badge variant="secondary" className="text-orange-600 bg-orange-400/10 hover:bg-orange-400/20">
+                            <ThumbsUpIcon className="w-3 h-3 mr-1" />
                             {article.score} Points
                         </Badge>
                         {article.detailed_analysis && (
                             <Badge variant="outline" className="text-blue-400 border-blue-500/30">
                                 AI Score: {article.detailed_analysis.ai_score}
+                            </Badge>
+                        )}
+                        {favoritesCount > 0 && (
+                            <Badge variant="secondary" className="text-red-500 bg-red-400/10 hover:bg-red-400/20">
+                                <HeartIcon className="w-3 h-3 mr-1" />
+                                {favoritesCount}
                             </Badge>
                         )}
                         <span className="flex items-center text-sm text-muted-foreground ml-auto">

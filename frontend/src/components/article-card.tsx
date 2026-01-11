@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { ArticleSchema } from "@/types/api";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, MessageSquareIcon, ExternalLinkIcon, StarIcon } from "lucide-react";
+import { CalendarIcon, MessageSquareIcon, ExternalLinkIcon, ThumbsUpIcon, HeartIcon, BookmarkIcon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useChatStore } from "@/stores/chat";
-
+import { useAuthStore } from "@/stores/auth";
+import { api } from "@/lib/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 
 interface ArticleCardProps {
@@ -16,6 +19,70 @@ interface ArticleCardProps {
 
 export function ArticleCard({ article }: ArticleCardProps) {
     const { openChat } = useChatStore();
+    const token = useAuthStore((state) => state.token);
+    const queryClient = useQueryClient();
+
+    // Local state for optimistic updates
+    const [isFavorited, setIsFavorited] = useState(article.is_favorited);
+    const [favoritesCount, setFavoritesCount] = useState(article.favorites_count || 0);
+    const [isReadLater, setIsReadLater] = useState(article.is_read_later);
+
+    const toggleFavoriteMutation = useMutation({
+        mutationFn: async () => {
+            if (!token) throw new Error("Please sign in to favorite");
+            if (isFavorited) {
+                await api.removeFavorite(article.id, token);
+            } else {
+                await api.addFavorite(article.id, token);
+            }
+        },
+        onMutate: async () => {
+            // Optimistic update
+            const previousIsFavorited = isFavorited;
+            const previousCount = favoritesCount;
+            setIsFavorited(!previousIsFavorited);
+            setFavoritesCount(prev => previousIsFavorited ? prev - 1 : prev + 1);
+            return { previousIsFavorited, previousCount };
+        },
+        onError: (err, variables, context) => {
+            // Rollback
+            if (context) {
+                setIsFavorited(context.previousIsFavorited);
+                setFavoritesCount(context.previousCount);
+            }
+            // Show error (if we have a toast mechanism, use it. For now, we can rely on console)
+            console.error(err);
+            alert(err.message);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["articles"] });
+        }
+    });
+
+    const toggleReadLaterMutation = useMutation({
+        mutationFn: async () => {
+            if (!token) throw new Error("Please sign in to bookmark");
+            if (isReadLater) {
+                await api.removeReadLater(article.id, token);
+            } else {
+                await api.addReadLater(article.id, token);
+            }
+        },
+        onMutate: async () => {
+            const previousIsReadLater = isReadLater;
+            setIsReadLater(!previousIsReadLater);
+            return { previousIsReadLater };
+        },
+        onError: (err, variables, context) => {
+            if (context) setIsReadLater(context.previousIsReadLater);
+            console.error(err);
+            alert(err.message);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["articles"] });
+        }
+    });
+
     const formattedDate = new Date(article.posted_at).toLocaleDateString("zh-CN", {
         month: "short",
         day: "numeric",
@@ -43,10 +110,34 @@ export function ArticleCard({ article }: ArticleCardProps) {
                             </a>
                         </div>
                     </CardTitle>
-                    <Badge variant="secondary" className="shrink-0 flex gap-1 items-center">
-                        <StarIcon className="w-3 h-3 text-yellow-500" />
-                        {article.score}
-                    </Badge>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant="secondary" className="flex gap-1 items-center px-1.5 h-7">
+                            <ThumbsUpIcon className="w-3.5 h-3.5 text-orange-500" />
+                            <span className="text-sm font-medium">{article.score}</span>
+                        </Badge>
+
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`h-7 w-7 ${isFavorited ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'}`}
+                            onClick={() => toggleFavoriteMutation.mutate()}
+                        >
+                            <HeartIcon className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
+                            {/* Small count next to heart if needed, but badge is separate now. The badge shows GLOBAL count. */}
+                        </Button>
+                        {favoritesCount > 0 && (
+                            <span className="text-xs text-muted-foreground font-mono">{favoritesCount}</span>
+                        )}
+
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`h-7 w-7 ${isReadLater ? 'text-primary hover:text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                            onClick={() => toggleReadLaterMutation.mutate()}
+                        >
+                            <BookmarkIcon className={`w-4 h-4 ${isReadLater ? 'fill-current' : ''}`} />
+                        </Button>
+                    </div>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
                     <span className="flex items-center gap-1">

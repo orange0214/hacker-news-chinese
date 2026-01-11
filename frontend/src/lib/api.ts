@@ -65,5 +65,31 @@ export const api = {
             method: "POST",
             body: JSON.stringify({ email, password })
         });
+    },
+
+    // Interactions
+    addFavorite: async (articleId: number, token: string) => {
+        return fetch(`${API_BASE_URL}/interactions/favorites/${articleId}`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+    },
+    removeFavorite: async (articleId: number, token: string) => {
+        return fetch(`${API_BASE_URL}/interactions/favorites/${articleId}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+    },
+    addReadLater: async (articleId: number, token: string) => {
+        return fetch(`${API_BASE_URL}/interactions/read-later/${articleId}`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+    },
+    removeReadLater: async (articleId: number, token: string) => {
+        return fetch(`${API_BASE_URL}/interactions/read-later/${articleId}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
     }
 };

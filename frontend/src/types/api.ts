@@ -22,6 +22,9 @@ export interface ArticleSchema {
     type: string;
     detailed_analysis?: AITranslatedResult;
     descendants?: number;
+    favorites_count?: number;
+    is_favorited?: boolean;
+    is_read_later?: boolean;
     deleted?: boolean;
     dead?: boolean;
 }
