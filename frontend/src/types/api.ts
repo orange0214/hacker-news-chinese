@@ -57,13 +57,24 @@ export interface ChatMessage {
     content: string;
 }
 
+export interface ConversationSchema {
+    id: string;
+    title?: string;
+    article_id?: number;
+    updated_at: string;
+}
+
+export interface ConversationMessageSchema extends ConversationSchema {
+    messages: ChatMessage[];
+}
+
 export interface ChatRequest {
     article_id: number;
     message: string;
-    history: ChatMessage[];
+    conversation_id?: string;
 }
 
 export interface GlobalChatRequest {
     message: string;
-    history: ChatMessage[];
+    conversation_id?: string;
 }

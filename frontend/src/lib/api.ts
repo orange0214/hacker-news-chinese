@@ -30,20 +30,40 @@ export const api = {
         return fetchClient<ArticleListResponse>(`/articles/?${query.toString()}`);
     },
 
-    chatMessage: async (payload: ChatRequest): Promise<Response> => {
-        // Returning Response object for streaming handling in component
+    chatMessage: async (payload: ChatRequest, token: string): Promise<Response> => {
         return fetch(`${API_BASE_URL}/chat/message`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
             body: JSON.stringify(payload),
         });
     },
 
-    globalChat: async (payload: GlobalChatRequest): Promise<Response> => {
+    globalChat: async (payload: GlobalChatRequest, token: string): Promise<Response> => {
         return fetch(`${API_BASE_URL}/chat/global`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
             body: JSON.stringify(payload),
         });
     },
+
+    // Auth
+    signup: async (email: string, password: string) => {
+        return fetchClient<{ user: any, session: any }>("/auth/signup", {
+            method: "POST",
+            body: JSON.stringify({ email, password })
+        });
+    },
+
+    login: async (email: string, password: string) => {
+        return fetchClient<{ user: any, access_token: string, refresh_token: string }>("/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ email, password })
+        });
+    }
 };
