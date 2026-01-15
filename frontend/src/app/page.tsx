@@ -10,10 +10,14 @@ import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
 import { useChatStore } from "@/stores/chat";
 import { MessageCircleIcon } from "lucide-react";
+import Link from "next/link";
+import { useAuthStore } from "@/stores/auth";
+import { LoginDialog } from "@/components/auth/login-dialog";
 
 export default function Home() {
   const { ref, inView } = useInView();
   const { openChat } = useChatStore();
+  const authStore = useAuthStore();
 
   const {
     data,
@@ -47,6 +51,20 @@ export default function Home() {
             HN Chinese
           </h1>
           <div className="flex items-center gap-2">
+            {!authStore.token ? (
+              <>
+                <LoginDialog>
+                  <Button variant="ghost" size="sm">Login</Button>
+                </LoginDialog>
+                <Button size="sm" asChild>
+                  <Link href="/signup">Sign Up</Link>
+                </Button>
+              </>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => authStore.logout()}>
+                Logout
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"

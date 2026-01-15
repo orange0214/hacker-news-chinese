@@ -53,10 +53,10 @@ export const api = {
     },
 
     // Auth
-    signup: async (email: string, password: string) => {
+    signup: async (email: string, password: string, metadata?: any) => {
         return fetchClient<{ user: any, session: any }>("/auth/signup", {
             method: "POST",
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, password, data: metadata })
         });
     },
 
