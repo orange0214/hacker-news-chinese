@@ -13,6 +13,7 @@ import { MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth";
 import { LoginDialog } from "@/components/auth/login-dialog";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Home() {
   const { ref, inView } = useInView();
@@ -77,6 +78,7 @@ export default function Home() {
             <Button variant="ghost" size="icon" onClick={() => refetch()} disabled={status === 'pending'}>
               <RefreshCcw className={`w-4 h-4 ${status === 'pending' ? 'animate-spin' : ''}`} />
             </Button>
+            <ModeToggle />
           </div>
         </div>
       </header>

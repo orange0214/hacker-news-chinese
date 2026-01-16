@@ -11,6 +11,7 @@ import { useChatStore } from "@/stores/chat";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/stores/auth";
 import { api } from "@/lib/api";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function ArticleDetailPage() {
     const params = useParams();
@@ -175,6 +176,9 @@ export default function ArticleDetailPage() {
                         <MessageSquareIcon className="w-4 h-4 mr-2" />
                         Chat
                     </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                    <ModeToggle />
                 </div>
             </header>
 
