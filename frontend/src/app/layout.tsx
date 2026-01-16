@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { ChatPanel } from "@/components/chat/chat-panel";
+import { LayoutShifter } from "@/components/layout-shifter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
         <Providers>
-          {children}
+          <LayoutShifter>
+            {children}
+          </LayoutShifter>
           <div className="fixed z-[100]">
             <ChatPanel />
           </div>

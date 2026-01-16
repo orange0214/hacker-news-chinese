@@ -54,7 +54,7 @@ export function ChatPanel() {
     return (
         <Sheet open={isOpen} onOpenChange={(open) => !open && closeChat()} modal={false}>
             <SheetContent
-                className="w-[400px] sm:w-[540px] flex flex-col p-0 border-l border-border/40 bg-background/95 backdrop-blur-3xl shadow-2xl"
+                className="w-full sm:w-[450px] flex flex-col p-0 border-l border-border/40 bg-background/95 backdrop-blur-3xl shadow-2xl"
                 side="right"
                 disableOverlay={true}
             >

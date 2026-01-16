@@ -154,6 +154,8 @@
 
 #### 01/14/2026
 - 前端增加login/sign up
+- 前端增加light mode
+- 当打开sidebar时，调整显示
 
 
 
