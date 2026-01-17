@@ -9,11 +9,20 @@ import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
 import { useChatStore } from "@/stores/chat";
-import { MessageCircleIcon } from "lucide-react";
+import { MessageCircleIcon, LogOut, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { ModeToggle } from "@/components/mode-toggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Home() {
   const { ref, inView } = useInView();
@@ -62,9 +71,37 @@ export default function Home() {
                 </Button>
               </>
             ) : (
-              <Button variant="ghost" size="sm" onClick={() => authStore.logout()}>
-                Logout
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={authStore.user?.avatar_url} alt={authStore.user?.name || "User"} />
+                      <AvatarFallback>{authStore.user?.email?.substring(0, 2).toUpperCase() || "U"}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{authStore.user?.name || "User"}</p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {authStore.user?.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="cursor-pointer">
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => authStore.logout()} className="cursor-pointer text-red-600 focus:text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
             <Button
               variant="outline"
